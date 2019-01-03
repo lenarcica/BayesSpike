@@ -1,0 +1,4 @@
+
+useDynLib(BayesSpike)
+exportPattern("^[[:alpha:]]+")
+import( Rcpp )

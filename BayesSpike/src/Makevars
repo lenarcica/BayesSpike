@@ -1,0 +1,57 @@
+## we use the BLAS and the LAPACK library:
+## BayesSpike Makevars
+
+PKG_LIBS = `$(R_HOME)/bin/Rscript -e "Rcpp:::LdFlags()" ` `$(R_HOME)/bin/Rscript -e "RcppClassic:::LdFlags()" ` $(SUBLIBS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+##PKG_LIBS = $(SUBLIBS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) \
+## `$(R_HOME)/bin/Rscript -e "Rcpp:::CxxFlags()" ` \
+## '${R_HOME}/bin/Rscript.exe" -e "Rcpp:::CxxFlags()"' \
+## '${R_HOME}/bin/Rscript.exe" -e "Rcpp:::LdFlags()"' \
+## '${R_HOME}/bin/Rscript -e "Rcpp:::LdFlags()"' \
+
+
+
+PKG_CXXFLAGS=`${R_HOME}/bin/Rscript -e "Rcpp:::CxxFlags()"`
+PKG_LDFLAGS=`$(R_HOME)/bin/Rscript -e "Rcpp:::LdFlags()" `
+#SHLIB_CXXLDFLAGS = `${R_HOME}/bin/Rscript -e "Rcpp:::CxxFlags()"`
+
+all: $(SHLIB)
+##userLibrary
+##-I../inst/include/
+
+#BayesSpikeCpp.o : BayesSpikeCpp.h  BayesSpikeCpp.cpp
+# R CMD SHLIB -I/Library/Frameworks/R.framework/Versions/2.12/Resources/library/Rcpp/include $(PKG_LIBS) -o BayesSpikeCpp.o BayesSpikeCpp.cpp
+ 
+#BayesSpike.o : BayesSpikeCpp.o BayesSpikeGibbs.o BayesSpikeExternal.o BayesSpikeHelpers.o
+#  R CMD SHLIB -L$(PKG_LDFLAGS) $(PKG_LIBS) -o BayesSpike.so BayesSpikeCpp.o BayesSpikeGibbs.o BayesSpikeExternal.o BayesSpikeHelpers.o
+
+##userLibrary: 	$(USERLIB) $(USERLIBST)
+##		-@if test ! -e $(USERDIR)$(R_ARCH); then mkdir -p $(USERDIR)$(R_ARCH); fi
+##		cp $(USERLIB) $(USERDIR)$(R_ARCH)
+##		cp $(USERLIBST) $(USERDIR)$(R_ARCH)
+##		rm $(USERLIB) $(USERLIBST)
+##               
+##$(USERLIB): 	$(OBJECTS)
+##		$(SHLIB_CXXLD) -o $(USERLIB) $(OBJECTS) $(SHLIB_CXXLDFLAGS) $(ALL_LIBS)
+##		@if test -e "/usr/bin/install_name_tool"; then /usr/bin/install_name_tool -id $(R_PACKAGE_DIR)/lib$(R_ARCH)/$(USERLIB) $(USERLIB); fi
+
+$(USERLIBST): 	$(OBJECTS)
+		$(AR) qc $(USERLIBST) $(OBJECTS)
+		@if test -n "$(RANLIB)"; then $(RANLIB) $(USERLIBST); fi
+
+##.PHONY: 	all clean userLibrary 
+
+##clean:
+##		rm -f $(OBJECTS) $(SHLIB) $(USERLIB) $(USERLIBST)
+
+
+BayesSpikeCuda.o : BayesSpikeCuda.cu
+	R CMD SHLIB -o BayesSpikeCuda.o  -L/usr/local/cuda -L/usr/local/cuda/lib BayesSpikeCuda.cu -lcublas
+
+# Add source files here
+# EXECUTABLE := vector_add
+# CUDA source files ( compiled with cudacc )
+CUFILES := BayesSpikeCuda.cu
+
+
+                                                                                                                              
+                                                                                                                              

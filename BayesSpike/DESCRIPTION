@@ -1,0 +1,13 @@
+Package: BayesSpike
+Type: Package
+Title: Bayesian Spike and Slab Hierarchical Models
+Version: 0.5321
+Date: 2013-10-30 (update 2016-10-28)
+Author: Alan Lenarcic
+Maintainer: <lenarcic@post.harvard.edu>
+Description: Universal Hierchical Model for group effects, compiled for R 3.3.1
+License: R Public License
+LazyLoad: yes
+LinkingTo: Rcpp
+Depends:  corpcor, R.oo, coda, Rcpp
+Packaged: 2011-01-28 20:33:29 UTC; lenarcic

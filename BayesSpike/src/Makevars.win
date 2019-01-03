@@ -1,0 +1,69 @@
+## we use the BLAS and the LAPACK library:
+##RCPP_INC = c:/Users/ALAN12~1/Documents/R/win-library/R/RCpp/include
+##RCPP_INC2 = C:/Users/ALANLE~1/Documents/R/win-library/2.13.1/Rcpp/include
+
+## BayesSpike MakeVars.win
+
+PKG_LIBS = $(SUBLIBS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)  $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" -e "Rcpp:::LdFlags()")
+
+
+S64ARCH1 = /x86_64
+S64ARCH2 = /x64
+S32ARCH = /i386
+
+mFactor = 64
+mRARCH = -march=x86_64
+
+ifeq ($(R_ARCH), $(S64ARCH1))
+	mFactor = 64
+	amRARCH = -march=x86_64
+	mRARCH = -march=x86_64
+	PKG_LIBS = -L$(R_HOME)/bin/x86_64 $(SUBLIBS) $(shell "${R_HOME}/bin/x86_64/Rscript.exe" -e "Rcpp:::LdFlags()") $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)  
+endif
+
+ifeq ($(R_ARCH), $(S64ARCH2))
+	mFactor = 64
+	amRARCH = -march=x64
+	mRARCH = -march=x86_64
+	PKG_LIBS = -L$(R_HOME)/bin/x64 $(SUBLIBS)  $(shell "${R_HOME}/bin/x64/Rscript.exe" -e "Rcpp:::LdFlags()") $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(shell "${R_HOME}/bin/x64/Rscript.exe" -e "Rcpp:::LdFlags()")
+endif
+
+ifeq ($(R_ARCH), $(S32ARCH))
+	mFactor = 32
+	mRARCH = -march=i386	
+  PKG_LIBS = -L$(R_HOME)/bin/i386 $(SUBLIBS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)  $(shell "${R_HOME}/bin/i386/Rscript.exe" -e "Rcpp:::LdFlags()")
+endif
+	
+#$(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" -e " ()")
+##PKG_INC =  $(RCPP_INC2) 
+##PKG_CPPFLAGS = $(RCPP_INC2)
+##$(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" -e "Sys.getenv(\"RCPP_INC\")")
+
+##echo  "We'll do architechture $(mRARCH)"
+ 
+# Add source files here
+# EXECUTABLE := vector_add
+# CUDA source files ( compiled with cudacc )
+CUFILES = BayesSpikeCuda.cu
+
+all: $(SHLIB)
+
+BayesSpike.dll: BayesSpikeCpp.o BayesSpikeHelpers.o BayesSpikeExtern.o  EigenSolve.o  BayesSpikeSliceSampling.o IncidentalOp2009.o MyMatrixOp2009.o TruncNorm.o
+	$(SHLIB) -o BayesSpike.dll -L  BayesSpikeCpp.o BayesSpikeHelpers.o BayesSpikeExtern.o EigenSolve.o  BayesSpikeSliceSampling.o HeapSort.o IncidentalOp2009.o MyMatrixOp2009.o TruncNorm.o
+	
+##BayesSpike.o: BayesSpike.cc
+##	$(SHLIB) -o BayesSpike.o BayesSpike.cc
+
+##BayesSpikeHelpers.o: BayesSpikeHelpers.cc
+##	$(SHLIB) -o BayesSpikeHelpers.o BayesSpikeHelpers.cc
+  
+##BayesSpikeCuda.o: BayesSpikeCuda.cu 
+##	$(SHLIB) -o BayesSpikeCuda.o  -L/usr/local/cuda -L/usr/local/cuda/lib BayesSpikeCuda.cu -lcublas
+   
+##BayesSpikeCuda.dll: BayesSpike.o BayesSpikeCuda.o 
+##	$(SHLIB) -o BayesSpikeCuda.dll -L/usr/local/cuda -L/usr/local/cuda/lib Bayesspike.o BayesSpikeCuda.o -lcublas
+
+
+
+                                                                                                                              
+                                                                                                                              
