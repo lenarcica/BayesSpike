@@ -13,6 +13,8 @@
 \alias{CodaTau}
 \alias{CodaP}
 \alias{OnCoda}
+\alias{RsCodaIFile}
+\alias{RsCodaJFile}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Compressed Coda Chain Buffers which are saved to disk in BayesSpike}
 \description{
@@ -57,6 +59,14 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
 \item{CodaSigma}{Draws for Noise parameter}
 \item{ICoda}{This is an integer index sort of a Coda buffer (including old Coda Beta.  It attempts to sort an old buffer by energy levels
   This is usefull in \code{\link{EESampling}}}
+\item{RsCodaIFile}{String vector for file name to save I File buffer.}
+\item{RsCodaJFile}{String vector for file name to save J File buffer.}
+\item{RsPiACodaFile}{PiA Coda File Directory}
+\item{PiACodaBuffer}{Buffer for PiA draws to be stored in.}
+\item{SigCodaBuffer}{Buffer for Sigma Squared draws to be stored in.}
+\item{RsWeightFile}{File name to save weights to}
+\item{WeightBuffer}{Weights of each sample i given T distribution of noise correction.  See \code{\link{RandomTruncatedT}} }
+\item{YBuffer}{Y Draws for Probit or Robit distributions.}
 
 }
 \details{

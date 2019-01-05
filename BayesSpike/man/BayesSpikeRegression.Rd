@@ -58,6 +58,7 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
   \item{\code{\link{OnPiA}}}{Current \eqn{\pi_{\mbox{\tiny{$\mathcal{A}$}}}}{piA} parameter.}
   \item{\code{\link{OnSigma}}}{Current \eqn{\sigma^2}{sigma^2} noise paramter.}
   \item{\code{\link{dfRobit}}}{Set this to do Robit regression (Y entry must be 0-1)}
+  \item{\code{\link{dfTNoise}}}{Set this when T Noise error is exepected.  Y belongs to real line and the process includes reweighting samples.}
   \item{\code{\link{TemperatureList}}}{TemperatureList must be a set of descending temperatures (positive numbers greter than 1).
     Activating TemperatureList activates \link{EE-sampling} feature.  Only the lowest temperature Gibbs chain
     is valuable, but it features frequent mixing draws from higher temperature values.}
@@ -118,12 +119,16 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
   \item{\code{\link{CompleteTime}}}{Time when Gibbs Sampler finished.}
   \item{\code{IamBayesSpike}}{Indicator that object is of BayesSpikeClass}
   \item{\code{RunAlgorithm()}}{The Method that running a BayesSpike triggers.}
+  
+  Note that \code{BayesSpikeCL} in the file \code{BayesSpikeCpp.cpp} will contain a
+  list of the many public functions available to the output class of this paper.
 }
 \references{ Diallel Paper, pending BayesSpike submission }
 \author{ Alan Lenarcic, Will Valdar }
 \note{ 
   "TBSRoo"  is a class using R.oo which we would like to deprecate in favor of 
-  an R5 class
+  an R5 class.  BayesSpikeCL is the critical class for the BayesSpikeRegression algorithm, and contains 
+  many methods, fields, and functions.
 }
 \seealso{ 
   \code{\link{BayesSpikeRegression}}, 
