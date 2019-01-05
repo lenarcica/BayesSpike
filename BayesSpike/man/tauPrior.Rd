@@ -1,10 +1,10 @@
-\name{MT}
+\name{tauPrior}
 \alias{AllTauPriors}
 \alias{TauOniiPrior}
 \alias{MTOnii}
 \alias{oniiMT}
-\alias{mt}
-\alias{Mt}
+\alias{tauprior}
+\alias{PriorTau}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{MT the loaded properties of Onii loaded in group of Tauii parameters.}
 \description{
@@ -18,6 +18,7 @@
  \eqn{\beta_{j} \sim N(0, \tau^2_{k}) \mbox{ for all $j \in \mathbb{J}(k)$}.}
  {beta_j ~ N(0, tau^2_k) for all j in J(k).}
  
+ The data is accessible as \code{\link{MT}} object.
 }
 \usage{
 BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,

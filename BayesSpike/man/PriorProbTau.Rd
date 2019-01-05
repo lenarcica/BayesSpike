@@ -1,23 +1,22 @@
-\name{AM}
-\alias{AM}
-\alias{MakeAM}
-\alias{MakeAm}
-\alias{Makeam}
-\alias{am}
-\alias{MatrixM}
-\alias{matrixm}
-
+\name{PriorProbTau}
+\alias{PriorProbTau}
+\alias{PriorProbTau}
+\alias{priorprobtau}
+\alias{PriorProbFixed}
+\alias{priorprobfixed}
+\alias{Priorprobfixed}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Matrix "AM" is a transform from n linearly dependent columns to n dependent columns}
+\title{PriorProbTau and PriorProbFixed}
 \description{
-Matrix AM was described in Section "3.1" of the BayesSpike Paper.
+Often users will want to affect specific prior opinions on inclusion for parameters or groups of parameters.
 
-This matrix can be used to transform any linearly independent group of n columns 
-assigned to a group parameters into
-ideally a set of n-1 set that removes an additive dependence constraint (i.e. a+b+c+d+e..==0)
+These would either boost, guarantee, or exclude chances of a set of coefficients belonging to the model.
 
-It is used in \code{\link{BayesSpikeFromAutoDiallel}} so that selection is known
-to operate on restricted columns.
+These vectors can supply users with a way to modify that input.
+
+Please see \code{\link{OnPiA}} to learn more about the overall average inclusion probability, and \code{\link{MT}} to learn about other prior distribution
+modifications on the tau parameter (particularly it's spread and long tailed prior.)
+ 
 }
 \usage{
 BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
@@ -47,47 +46,44 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  MakeAM is a function that takes one input "n".
-  
-  It constructs a transformation matrix.  This matrix can be transposed to reconstruct
-  data.  Note that \code{t(AM) %*% AM == n/(n-1) *  I(n-1)}. and thus for vectors
-    BT in R^n such that sum(BT) = 0 {centered} then  \code{(n-1)/n %*% AM %*% t(AM) %*% BT  -BT = 0}
+  \item{PriorProbTau}{Vector of Inclusion modifiers for Tau inclusion of each group.  Should be length number of groups (excluding fixed solitary parameters) }
+  \item{PriorProbFixed}{Vector of Inclusion modifiers for Fixed inclusion of each group}
 
 }
 \details{
-   This is only used automatically with a Diallel structure, and in practice, a very
-   particular user-friendly code would have to be written if groups were all of very different
-   size and requirements within a given group sampler.
+   This could be connected to a \code{\link{MAkeAM}} transform, or related to ones other
+   opinions on inclusion of a given parameters.  For each group or fixed parameters.
    
-   To be pedantic, if we were fully certain of our prior opinions, albeit only on the
-original X scale,   if we  manipulate of columns of X, to be particularly accurate, would require
-   a slight adjustment of the "OnPiA" probability of inclusion.  
+   A value:
    
-   This is because the transformation "M" adds a multiplicative factor of det|M| to a calculation.
-    "int f(XBeta) Prior(Beta) dBeta = int f(XM Betaprime) Prior(Betaprime) M dBetaprime"
-
-   That said it isn't clear that, once one has demanded an M M^T correlation structure on Beta,
-   that one's relative a opinion on the prior inclusion of the "tau^2_k" isn't intended for the
-   transformed unconfounded parameters, instead of the confounded ones.  When groups are all confounded similarly and of similar size
-   the relative effect to including or excluding a slight modification of \code{\link{PriorProbTau}} is probably more trouble than its worth.
+   1. Between 0 and 1 this replaces \code{\link{OnPiA}} and is a fixed prior probability for this group.  Even if OnPiA were .15, but
+   PriorProbFixed[2] was set to .9, the .9 would be used for the 2nd fixed parameter.
    
-   An effect to this is implemented in \code{\link{0009BayesSpikeAutoDiallel}} file, but it is generally a users responsibility to decide what sort
-   of confounding their data has and which prior scale to choose for their data.  The modifications are performed using the inputs is effected on the \code{\link{PriorProbTau}}
-   input to BayesSpike.  This is a relative change to the effect that \code{\link{OnPiA}} has on the overall group inclusion, shrinking it slightly on the Odds scale towards zero.
+   2.  If it is 0.0 then the coefficient or group of coefficients are always excluded.  (0.0 Probability)
+   
+   3.  If it is 1.0 then the coefficient or group of coefficients is always included.    (1.0 Probability)
+   
+   4. If it is -1.0, then this particular coefficient is still replaced by \code{\link{OnPiA}}.
+   
+   5. If it is another negative realnumber, a[j] for coefficient or group [j], with absolute value |a[j]| then \code{\link{OnPiA}} is scaled by an odds factor of |a|, that is
+      PiA[j] = (|a[j]| OnPiA) / (|a[j]| OnPiA + 1.0- OnPiA) as the transform factor.  Thus this factor is shrunk or expanded relative to other
+      coefficients or groups that depend on OnPiA.  
 }
 \value{
     Object analysis object is a "Rcpp module", with various properties and methods
-  
-}                                                                        
+     \item{CodaList}{Coda mcmc table list of output if generated}
+     \item{Beta}{Current Beta Vector}
+}
 \references{ Diallel Paper, pending BayesSpike submission }
 \author{ Alan Lenarcic, Will Valdar }
 \note{ 
   "TBSRoo"  is a class using R.oo which we would like to deprecate in favor of 
   an R5 class, "\code{\link{TBSR5}}"  or "\code{\link{BayesSpikeR5}}" is  the R5 storage class.
 }
-\seealso{ \code{\link{BayesSpikeRegression}}, \code{\link{BayesSpikeFromAutoDiallel}}, \code{\link{PriorProbTau}},
+\seealso{ \code{\link{BayesSpikeRegression}}, \code{\link{BayesSpikeFromAutoDiallel}}, 
+  \code{\link{tauPrior}}, \code{\link{MakeAM}},
   \code{\link{BayesDiallel}}, \code{\link{coda}},
-  \code{\link{Rcpp}}, \code{\link{R.oo}}, \code{\link{methods::ReferenceClasses}} 
+  \code{\link{Rcpp}}, \code{\link{R.oo}}, \code{\link{methods::ReferenceClasses}}
   }
 \examples{
 ## Load in R packages

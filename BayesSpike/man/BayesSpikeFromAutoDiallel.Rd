@@ -1,6 +1,10 @@
 \name{BayesSpikeFromAutoDiallel}
 \alias{BayesSpikeFromAutoDiallel}
 \alias{AFDBayesSpike}
+\alias{0009BayesSpikeAndAutoDiallel}
+\alias{BayesSpikeAFD}
+\alias{BayesSpikeAutoDiallel}
+\alias{0009BayesSpikeAndAutoDiallel.r}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ BayesSpikeFromAutoDiallel, converting BayesDiallel, "FullDiallelAnalyze" object to use of BayesSpike algorithm }
 \description{
@@ -15,6 +19,8 @@
   for information within package \code{\link[BayesDiallel]{BayesDiallel}}
    on how to used \code{\link[BayesDiallel]{FullDiallelAnalyze}} objects
    and \code{\link[BayesDiallel]{DiallelAnalyzer}} wrapper function to their fullest.
+   
+   The code for demonstrating these operations is in package R file "0009BayesSpikeAndAutoDiallel.r".
 }
 \usage{
        
@@ -91,6 +97,9 @@ This object has Coda Chains in the form of \code{CAFD$BS$CodaList};
 To get final estimated MIP Probabilities use  \code{CAFD$BS$MIP}
 
 To get Posterior Probability chains use \code{CAFD$BS$ProbCodaList}
+
+Centering Conversions, as covered in \code{\link{MakeAM}} are usually helpful to ensuring
+that the Diallel integration is unconfounded (thus improving credibility intervals and coverage).
 
 Documentation for other BayesSpike Features is in development.
 
