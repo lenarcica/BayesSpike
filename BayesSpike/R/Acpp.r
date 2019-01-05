@@ -14,8 +14,28 @@
 ###  arrays through a "new/delete" functionality, guaranteeing both that vectors would not be moved or re-allocated
 ###  and that the arrage was protected in R until ready for deletion.  Given that the "Rf_protect()" and "Rf_unprotect()" 
 ###  functions in the R-CAppi can lead to challgenges during error events, the new and delete have preferable properties.
+###
+###  Thanks to the get___() method being available in Rcpp, most BayesSpike elements do not need to be encapsulated in AObjects.
 
 ### LockG, SetG, checking what happens:
+
+
+## LICENSE INFO: R CODE
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  A copy of the GNU General Public License is available at
+#  https://www.R-project.org/Licenses/
+#
+#  There are likely better bypasses to more directly using Rcpp functionality than this code.
+
 if (!exists("SetAcppText")) {
 SetAcppText <- function(AText) {
   paste("TryO = NULL; try( TryO <- bindingIsActive(\"", AText, "\", ACPPNAMESPACE), silent=TRUE);

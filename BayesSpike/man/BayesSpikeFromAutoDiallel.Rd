@@ -45,7 +45,7 @@ BayesSpikeFromAutoDiallel <- function(AFD, Y=NULL, X=NULL,
   SaveDir = NULL,  FileName = "AutoDiallelChain",
   NewWrite = 1, tauPriorMean = -1, tauPriordf = -1,
   WatchCoordinates = NULL, Run = FALSE,
-  PriorProbTau = NULL, PriorProbFixed = NULL) 
+  PriorProbTau = NULL, PriorProbFixed = NULL, UseDetFAC = FALSE) 
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -69,6 +69,9 @@ BayesSpikeFromAutoDiallel <- function(AFD, Y=NULL, X=NULL,
   \item{mStart}{Mean default to give to activated random effects groups inverse-gamma tau prior distribution }
   \item{Verbose}{Toggle to deliver messages during algorithm run}
   \item{PiAPrior}{A Prior for PiA}
+  \item{UseDetFAC}{When Centering is performed, this makes a decision whether to take a linear determinant factor to
+    shrink posterior quantities of matrix \code{\link{AM}} to shrink inclusion for contrained factors.  Usually this
+    is more trouble than it is worth, as the prior for unconfounded transform might be better off ignoring this factor.}
 }
 \details{
  Analysis object is a \code{\link[Rcpp]{Rcpp}} "Rcpp modules" object or imbedded C++ class with multiple

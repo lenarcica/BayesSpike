@@ -10,6 +10,7 @@
 \alias{EEProbSortWidth}
 \alias{BayesSpikeMergeAndPriors}
 \alias{eemergeevery}
+\alias{Tempii}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Equi-Energy Sampling for Bayes Spike}
 \description{
@@ -49,6 +50,7 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
     If the last number is not 1.0, a 1.0 will be added to the end of the list in default.  
 
     }
+  \item{Tempii}{ Which temperature are we currently located on.}
   \item{EEMergeEvery}{Number of iterations of Gibbs sampler between every "merge step" (draw from higher temperature energy level)}
   \item{DoEEProbSort}{A flag whether to sort Energy level samples at end of simulation at a temperature level.}
   \item{EEProbSortWidth}{A width of energy to consider as an "equi-energy slice" for merge draws.  Although, the merge step will 
@@ -88,7 +90,7 @@ a few more at each lower temperature, and most draws from the bottom temperature
 Setting "TempertureDecreasingRate" to a number < 1, such as .6, 
 achieves this pyramid structure.  
 
-
+Reading \code{\link{Codajj}} will explain how stored chains are saved in buffers.
 }
 \value{
     Object analysis object is a "Rcpp module", with various properties and methods

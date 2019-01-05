@@ -47,6 +47,12 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
+  \enumerate{
+   \item{n}{MakeAM(n) takes this many dimensions for function}
+   \item{UseDetFAC}{\code{\link{BayesSpikeFromAutoDiallel}}() takes this as an optional parameter, usually set to zero, so as to specify no prior correction 
+   while using the M matrix to make constrained parameters.}
+  }
+
   MakeAM is a function that takes one input "n".
   
   It constructs a transformation matrix.  
@@ -54,7 +60,7 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
   This matrix can be transposed to reconstruct
   data.  Note that \eqn{M^T{}M=n/(n-1)\times{}I(n-1)}{M^T*M==n/(n-1)*I(n-1)}, and thus for vectors
     \eqn{\beta\in R^n}{\beta in R^n} such that \eqn{\sum\beta=0}{sum(\beta)==0} centered then  
-    \eqn{\frac{n-1}{n}M{}M^T\beta-\beta = 0}{(n-1)/n*M*M^T*BT-\beta==0}.
+    \eqn{\frac{n-1}{n}M{}M^T\beta-\beta = 0}{(n-1)/n*M*M^T*\beta-\beta==0}.
 
 }
 \details{
@@ -67,13 +73,16 @@ original X scale,   if we  manipulate of columns of X, to be particularly accura
    a slight adjustment of the "OnPiA" probability of inclusion.  
    
    This is because the transformation "M" adds a multiplicative factor of det|M| to a calculation.
-    "\deqn{\int f(X \beta) p(\beta) d\beta = \int f(X \mathbf{M} \beta') p(\beta\') \mathbf{M} d\beta\' }{%
-int f(XBeta) Prior(Beta) dBeta = int f(XM Betaprime) Prior(Betaprime) M dBetaprime}"
+    "\deqn{\int f(X \beta) p(\beta) d\beta = \int f(X \mathbf{M} \beta') p(\beta') \mathbf{M} d\beta' }{%
+int f(X \beta) Prior(\beta) dbeta = int f(XM \beta') Prior(\beta') M d\beta'}"
 
    That said it isn't clear that, once one has demanded an \eqn{\mathbf{M}\mathbf{M}^{T}}{"M * t(M)"} correlation structure on Beta,
    that one's relative a opinion on the prior inclusion of the "tau^2_k" isn't intended for the
    transformed unconfounded parameters, instead of the confounded ones.  When groups are all confounded similarly and of similar size
-   the relative effect to including or excluding a slight modification of \code{\link{PriorProbTau}} is probably more trouble than its worth.
+   the relative effect to including or excluding a slight modification of \code{\link{PriorProbTau}} is probably more trouble than its worth. Given that 
+   the confoundedness of X and the constraint condition  \eqn{\sum_{j\inJ(k)} \beta==0}{sum_{j in J(k)}\beta==0} mean that 
+   \eqn{d\beta}{d\beta} can only  be integrated over the first \eqn{||J(k)|-1}{|J(k)|-1} coordinated.  The "UseDetFAC" feature is usually de-activated in the code for
+   the paper.
    
    An effect to this is implemented in \code{\link{0009BayesSpikeAutoDiallel}} file, but it is generally a users responsibility to decide what sort
    of confounding their data has and which prior scale to choose for their data.  The modifications are performed using the inputs is effected on the \code{\link{PriorProbTau}}

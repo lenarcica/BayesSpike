@@ -594,7 +594,7 @@ BayesSpikeFromAutoDiallel <- function(AFD, Y=NULL, X=NULL,
   NewWrite = 1, tauPriorMean = -1, tauPriordf = -1,
   WatchCoordinates = NULL, Run = FALSE,
   PriorProbTau = NULL, PriorProbFixed = NULL, ZeroOutBeforeSample = FALSE,
-  TestEndBayesSpikeAutoDiallel = -1) {
+  TestEndBayesSpikeAutoDiallel = -1, UseDetFAC = FALSE,...) {
   
   if (!exists("tauFixed")) { tauFixed <- 20; }
   if (!exists("MaximizeMeCauchyTotalIters")) { MaximizeMeCauchyTotalIters <- 100; }
@@ -613,6 +613,7 @@ BayesSpikeFromAutoDiallel <- function(AFD, Y=NULL, X=NULL,
   if (!exists("PiAPrior")) {   PiAPrior = c(20,20,20,20); }
   if (!exists("PriorProbTau")) { PriorProbTau <- NULL }
   if (!exists("MyPS")) { MyPS <- PriorStructureR5$new(.5,1); }
+  if (!exists("UseDetFAC")) { UseDetFAC <- FALSE; }
   if (!exists("dfTauStart")) { dfTauStart <- -1; }
   if (!exists("tauPriorMean")) { tauPriorMean <- -1; }
   if (!exists("tauPriordf")) { tauPriordf <- -1; }
@@ -802,7 +803,7 @@ BayesSpikeFromAutoDiallel <- function(AFD, Y=NULL, X=NULL,
      if (is.null(names(PriorProbTau))) {
        if (length(PriorProbTau) < length(tauEndList)) {
          try(PriorProbTau <- c(PriorProbTau, rep(PriorProbTau[length(PriorProbTau)],
-           length(EndList) - length(PriorProbTau)) ));
+           length(tauEndList) - length(PriorProbTau)) ));
        } else {
          try(PriorProbTau <- PriorProbTau[1:length(tauEndList)]);
        } 
@@ -829,9 +830,10 @@ BayesSpikeFromAutoDiallel <- function(AFD, Y=NULL, X=NULL,
        NewPriorProbTau = rep(0, length(tauEndList));
        NewPriorProbTau[(1:length(NTM))[!is.na(NTM)]] = 
          PriorProbTau[NTM[!is.na(NTM)]];
-       NewPriorProbTau[NewPriorProbTau == 0.0] = mean(PriorProbTau);
+       NewPriorProbTau[NewPriorProbTau == 0.0] = -1;
        PriorProbTau = NewPriorProbTau;
        ";
+       # We decide here that if user didn't give Prior Prob Tau, assume random parameter
        try(eval(parse(text=APTM)));
      }
    }
@@ -851,7 +853,7 @@ BayesSpikeFromAutoDiallel <- function(AFD, Y=NULL, X=NULL,
      print("Trying to identify the AllCenteredRandomVariables Set!");
      AllCenteredRandomVariables = AFD$AllCenteredRandomVariables;
      WhatRandoms <- rep(0, length(tauEndList));
-     if (is.null(PriorProbTau)) {
+     if (is.null(PriorProbTau) && UseDetFAC == TRUE) {
         PriorProbTau <- rep(-1, length(tauEndList));
         try(names(PriorProbTau) <- AFD$.AllRandomVariables[1:length(tauEndList)], silent=TRUE);  
      }
@@ -868,8 +870,10 @@ BayesSpikeFromAutoDiallel <- function(AFD, Y=NULL, X=NULL,
        }
      }
      ## Slight modification to PriorProbTau as described in section 3.1 to deal with centering restriction downgrade
-     if (WhatRandoms[1] > 0) {
-       VB <- PriorProbTau[1];  FAC <- (length(ABS)-1) / length(ABS);
+     if (WhatRandoms[1] > 0 && UseDetFAC == TRUE) {
+       nSM <- length(ABS)-1;
+       try(AM <- MakeAM(nSM+1)); FAC <- det(AM[1:nSM,1:nSM]);
+       VB <- PriorProbTau[1]; 
        if (VB > 0) {
          try(VB <- VB * FAC / (VB * FAC+1-VB))
        } else {
@@ -889,8 +893,10 @@ BayesSpikeFromAutoDiallel <- function(AFD, Y=NULL, X=NULL,
            break;
          }
        }
-       if (WhatRandoms[iti] > 0) {
+       if (WhatRandoms[iti] > 0 && UseDetFAC == TRUE) {
          VB <- PriorProbTau[iti];  FAC <- (length(ABS)-1) / length(ABS);
+         nSM <- length(ABS)-1;
+         try(AM <- MakeAM(nSM+1)); FAC <- det(AM[1:nSM,1:nSM]);
          if (VB > 0) {
            try(VB <- VB * FAC / (VB * FAC+1-VB))
          } else {
@@ -1323,6 +1329,27 @@ rTruncT <- function(n=1, df = 1, L = NULL, U = NULL, sig=NULL, mu=NULL) {
  return(sRet);
 }
 
+
+## MakeAM()
+##
+##   This function is described in the paper Section 3.1
+## Note that AM inverse is  (n-1) / n * t(AM)
+## (Only invertible for sum zero vectors length n).
+## that said if v is a vector in n-1 with all coefficients iid N(0, a^2)
+## Then it is still true that "v'=AM %*% v" is distributed with each
+## coefficient marginally N(0,a^2), but with sum v' = 0. 
+MakeAM <- function(n) {
+ ## A <- (n-2)^2+(n-2);
+ ## B <- 2*(n-2)/ sqrt(n-1);
+ ## C <- 1 - 1/(n-1);
+ ## k <- (-B+ sqrt(B^2+ 4 * A * C)) / ( 2 * A) 
+ k <- (-1 + sqrt(n)) / (n-1)^(3/2) 
+ AMM <- matrix(-k, n-1,n-1);
+ diag(AMM) <- k * (n-2) + 1 / sqrt(n-1);
+ AM <- rbind(AMM, rep(-1/sqrt(n-1), n-1));
+ return(AM);
+}
+
 ################################################################################
 ##  .AFunctionNewUnCenteredCodaList (Hidden Function of a BayesSpikeCL Object MBS)
 ##
@@ -1471,7 +1498,7 @@ MakeAM <- function(n) {
       ## colSums(bV^2) / (nn-1) = ....
       ## colSums(( bV %*% t(AM))^2)/(nn-1) = ...
       try(NewM[,AP+1:(length(CenteredIndices[[ii]])+1)] <-
-        FAC*MBS$CodaList[[tt]][,CenteredIndices[[ii]] ] %*% t(AM);
+        FAC*MBS$CodaList[[tt]][,CenteredIndices[[ii]] ] %*% t(AM));
       try(AP <- AP + NROW(AM));
       if (!is.null(ColsNames)) {
         try(AGC <- c(AGC, NewCenteredNames[[ii]]));

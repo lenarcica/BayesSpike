@@ -1,14 +1,26 @@
-\name{BayesSpikeRegression}
-\alias{BayesSpikeRegression}
+\name{ICoda}
+\alias{ICoda}
+\alias{JCoda}
+\alias{icoda}
+\alias{jcoda}
+\alias{IOldCoda}
+\alias{JOldCoda}
+\alias{Codajj}
+\alias{codaj}
+\alias{CodaBeta}
+\alias{OnCodaTLocjj}
+\alias{CodaTLocjj}
+\alias{CodaTau}
+\alias{CodaP}
+\alias{OnCoda}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{ BayesSpikeRegression algorithm }
+\title{ Compressed Coda Chain Buffers which are saved to disk in BayesSpike}
 \description{
-  The BayesSpike package for analyzing selection regression datasets via exclusionary spike sampling,
-  BayesSpikeRegression is chief wrapper function.
+  As related in Section 2.2 of the Bayes Spike Paper, saving of information is
+  done in compressed buffers that are frequently cleared to disk.
   
-  Warning, for successful use of \code{\link{BayesSpikeRegression}} the
-  directory input \code{\link{SaveDir}} must be set to a user-accessible hard-drive
-  location, see \code{\link{SaveDir}} for info on role of that data.
+  This way the storage requirements of large models do not affect the performance of the algorithm
+ 
 }
 \usage{
 BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
@@ -34,116 +46,45 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
   NoShrinkTau =NULL, StartRunProbVector = -100,
   PriorProbFixed=NULL, PriorProbTau = NULL, dfRobit = -1, TemperatureList = NULL,
   burnin = NULL, EEMergeEvery = NULL, DoEEProbSort = 0, 
-  EEProbSortWidth = -1, PrintIter = 200,DoLogitPostProb = FALSE,  
-  DoLongCI = FALSE, CpBuffLongCI = -1, ...)
+  EEProbSortWidth = -1, PrintIter = 200, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{X}{\eqn{\mathbf{X} \in \mathbb{R}^{n \times p}}{X in R[n * p]}
-    Covariates, Independent Variables for both fixed and grouped paramters.  }
-  \item{Y}{\eqn{\vec{Y} \in \mathbb{R}^{n}}{Y-vector in R^n} Dependent Variable. }
-  \item{BetaStart}{Starting \eqn{\vec{\boldsymbol{\beta}}} draw.  }
-  \item{IndexFirstRandomEffect}{Index in (1:NROW(X)) of the first "random effect", also \code{FirstRandom} }
-  \item{\code{\link{tauEndList}}}{Ending Indices of each group of random effects (random effects groups must be contiguous)}
-  \item{\code{\link{tauPriordf}}}{Degrees of freedom for \eqn{\tau_{j}^2}{tau_j^2} draws.}
-  \item{\code{\link{tauPriorMean}}}{Mean value for prior of \eqn{\tau_{j}^2}{tau_j^2}.}
-  \item{tauStartValues}{starting tau Values}
-  \item{dfTauStart}{Degrees of freedom default to give to activated random effects groups inverse-gamma tau prior distribution}
-  \item{mStart}{Mean default to give to activated random effects groups inverse-gamma tau prior distribution }
-  \item{Verbose}{Toggle to deliver messages during algorithm run}
-  \item{\code{\link{PiAPrior}}}{A Prior for PiA}
-  \item{\code{\link{PriorProbTau}}}{Prior probability of inclusion optional extended user input beyond OnPiA for groups}
-  \item{\code{\link{PriorProbFixed}}}{Prior probability of inclusion optional extended user input beyond OnPiA for solitary, ungrouped, coefficients}
-  \item{\code{\link{SigmaPrior}}}{A prior for noise parameter OnSigma}
-  \item{\code{\link{OnPiA}}}{Current \eqn{\pi_{\mbox{\tiny{$\mathcal{A}$}}}}{piA} parameter.}
-  \item{\code{\link{OnSigma}}}{Current \eqn{\sigma^2}{sigma^2} noise paramter.}
-  \item{\code{\link{dfRobit}}}{Set this to do Robit regression (Y entry must be 0-1)}
-  \item{\code{\link{TemperatureList}}}{TemperatureList must be a set of descending temperatures (positive numbers greter than 1).
-    Activating TemperatureList activates \link{EE-sampling} feature.  Only the lowest temperature Gibbs chain
-    is valuable, but it features frequent mixing draws from higher temperature values.}
-  \item{\code{\link{TypeFixedPrior}}}{Priors for Fixed parameters can take on multiple coding schemes.  0 is default, though
-  exponential priors and uniform priors are possible as well.  See \code{\link{TypeFixedPrior}} for
-  description of options.}
-  \item{\code{\link{tauFixed}}}{Bayed upon integer flag \code{\link{TypeFixedPrior}},
-    this double/vector/matrix should provide prior information on variances or bounds of the
-    fixed paramters}
-  \item{NumChains}{Number of chains to run.}
-  \item{\code{\link{SaveDir}}}{Save information directory, see \code{\link{SaveDir}} for 
-  description of BayesSpike saving buffer.}
-  \item{\code{\link{FileName}}}{ Choose a unique header name for MCMC compressed files and RData}
-  \item{\code{\link{FileSave}}}{ Additional File Save information.  }
-  \item{CauchyEpsilon}{A Cauchy convergence parameter, useful in the \code{\link{SampleNewTaus}} operation}
-  \item{MaxIters}{A Cauchy max iters parameter, useful in the \code{\link{SampleNewTaus}} operation}
-  \item{EarlyEndStep}{Integer, if greater than zero sets a stopping test function, stops Gibbs sampler on a given step (samplign function) at time EarlyEndtt.}
-  \item{EarlyEndtt}{Integer, if greater than zero setsiteration from gibbs sampler to stop.  Stop will occur
-   after running EarlyEndStep.}
-  \item{DoLongCI}{
-    To save Long Intervals, this must be true in \code{\link{BayesSpikeRegression}} call.
-    The "Long" Buffer is a storage of gibbs samples that are all non-zero for all p Beta coefficients
-    This can only be saved on a file (Not stored in Coda List even if DoRecord[1] == 1).  This draws a nonzero
-    Beta_j even if sampler itself drew a zero Beta_j.  This is used for robust confidence intervals for
-    coefficients near zero.  These confidence intervals are overly wide, though they benefit from shrinkage on the other coefficients.
-    See \code{\link{SubCodaList}} for more details, as well as \code{\link{BetaSymmetricLongConfidenceMatrix}}
-    }
-  \item{CpBuffLongCI}{Integer, How long should Long (No shrinkage to Zero) Buffer should be of size}
-  \item{\code{\link{WritePostProbBuffer}}}{Whether to store Posterior Probabilities in Coda Chains}
-  \item{burnin}{For calculations with MCMC chains, including drawing buffers, what initial position in chain to use as post-mixing time}
-  \item{\code{\link{EEMergeEvery}}}{ How often to perform a EE merge step if necessary. }
-  \item{\code{DependenciesTau}}{ TO_DO for future in case a design where certain Tau parameters require existence of previous tau parameters.  
-    Full Exact integration of these parameters would require integrations and samples from tree sets.}
-  
+\item{Codajj}{Integer, This is a buffer containing coordinates of all activated states each draw.  Each negative number is the iteration}
+\item{CodaBeta}{Double,The buffer is a list of the non-zero values for coordinates in Codajj.  Each negative number is the model size}
+\item{CodaTaujj}{Integer, this is the active group coordinates}
+\item{CodaTau}{Double, This is the draws for active non-zero tau. Each negative number is number of non zero tau each chain iteration}
+\item{CodaSigma}{Draws for Noise parameter}
+\item{ICoda}{This is an integer index sort of a Coda buffer (including old Coda Beta.  It attempts to sort an old buffer by energy levels
+  This is usefull in \code{\link{EESampling}}}
+
 }
 \details{
- Analysis object is a "Rcpp modules" object or imbedded C++ class with multiple
-   access vectors
-   
-   
-  Note that recentering function is usually optional on data.  A matrix as described in
-  BayesSpike Paper Section 3.1 is found at \code{\link{MakeAM}}
+ These Buffers and Lists are compressed versions of the CODA chains that are saved to the disk.
+ 
+ Details are largely given in Section 2.2
+ 
+ Note that Confidence intervals taken using Marginal Long CI in \code{\link{BetaSymmetricLongConfidenceMatrix}}
+ are generally stored in non-compressed format conditional on all parameters to get the right CI intervals for as-marketted coverage.
 }
 \value{
-    Object analysis object is a "\code{\link[Rcpp]{Rcpp}} module" of time , with various properties and methods
-     \item{CodaList}{Coda mcmc table list of output if generated}
-     \item{\code{\link{OnBeta}}}{Current Beta Vector}
-   \item{\link{PostProbBuffer}}{Buffer of information holding posterior probability information.}
-     \item{\link{PostProbCodaList}}{Final Coda List of information holding posterior probability information.}
-     \item{\code{\link{OnTau}}}{Current Draw of Tau random effects}
-     \item{XtX}{Current Weighted part matrix of correlations}
-     \item{XtY}{Current Weighted part vector of correlations}
-     \item{XtResid}{Current XtResid vector or 
-       \eqn{ \mathbf{X}^{T}( \vec{Y} - \mathbf{X} \boldsymbol{\beta}) }{ t(X) (Y-X*Beta)}
-      useful in deciding posterior probabilities.  }
-  \item{\code{\link{InitiateTime}}}{Time when BayesSpikeCL class was initiated}
-  \item{\code{\link{SecondInitiateTime}}}{Time when GibbsSampler was started}
-  \item{\code{\link{CompleteTime}}}{Time when Gibbs Sampler finished.}
-  \item{\code{IamBayesSpike}}{Indicator that object is of BayesSpikeClass}
-  \item{\code{RunAlgorithm()}}{The Method that running a BayesSpike triggers.}
+    \code{\link{ReturnSubCodaFromFiles}} is designed to extract CODA objects from these buffers that are saved to disk.
+    \code{\link{SaveDir}} should be set to save files to a disk.
 }
 \references{ Diallel Paper, pending BayesSpike submission }
 \author{ Alan Lenarcic, Will Valdar }
 \note{ 
-  "TBSRoo"  is a class using R.oo which we would like to deprecate in favor of 
-  an R5 class
+  "TBSR5"  or \link{BayesSpikeR5} is a class using \code{\link[methods]{ReferenceClasses}} 
+  but "TBSCpp" or \link{BayesSpikeCL} is a class using \link[Rcpp]{Rcpp} which 
+  is the primary return object.  
 }
-\seealso{ 
-  \code{\link{BayesSpikeRegression}}, 
-  \code{\link{RobitRegression}},
-  \code{\link{MT}},
-  \code{\link{OnPiA}},
-  \code{\link{OnSigma}},
-  \code{\link{PostProbCodaBuffer}},
-  \code{\link{Codajj}},
-  \code{\link{EESampling}},
-  \code{\link{BayesSpikeFromAutoDiallel}}, 
-  \code{\link[BayesDiallel]{BayesDiallel}}, 
-  \code{\link[BayesDiallel]{DiallelAnalyzer}},
-  \code{\link[coda]{mcmc}},
-  \code{\link[Rcpp]{Rcpp}}, \code{\link[R.oo]{R.oo}}, 
-  \code{\link[methods]{ReferenceClasses}},
-  \code{\link{MakeAM}},
-  \code{\link{Save}}, \code{\link{ReLoad}}
- }
+\seealso{ \code{\link{BayesSpikeRegression}}, \code{\link{BayesSpikeFromAutoDiallel}}, 
+  \code{\link{BayesDiallel}}, \code{\link{coda}},
+  \code{\link{Rcpp}}, \code{\link{R.oo}}, \code{\link{methods::ReferenceClasses}}
+  }
 \examples{
+## Load in R packages
+library(BayesSpike)
 ## Load in R packages
 library(BayesSpike);
 try(require(lattice, quietly=TRUE, warn.conflicts=FALSE), silent=TRUE);
@@ -154,32 +95,24 @@ try(require(corpcor, quietly=TRUE, warn.conflicts=FALSE), silent=TRUE);
 require(BayesDiallel, quietly = TRUE, warn.conflicts=FALSE);
 require(R.oo, warn.conflicts=FALSE, quietly=TRUE);
 
-################################################################################
-## Not Usuable in sample package
-##  try(library(AlanDirectories), silent=TRUE)
-##  try(AlanDirectores:::SetSaveHomes(),silent=TRUE);
-##  try(SetSaveHomes());
-##  SaveDir = BSSaveDir;  ## Save Dir set by default, or set to ones own accessible harddrive space.
- ###############################################################################
- 
- ###############################################################################
- ### Simulate Data 
+ try(library(AlanDirectories), silent=TRUE)
+ try(AlanDirectores:::SetSaveHomes(),silent=TRUE);
+ try(SetSaveHomes());
+ SaveDir = BSSaveDir;  ## Save Dir set by default, or set to ones own accessible harddrive space.
+  
   NewWrite = 1; dfRobit = 7; dfRobit = -1;
   nop = 4; NoTau = 0;
   if (NoTau == 0) {
-    ## In this version the Random effects are simulated by "Non-Random" means
     FirstRandom =5 + nop+1; tauEndList = FirstRandom + c(7,14,22,28);
     CFirstRandom = FirstRandom -1;  CtauEndList = tauEndList -1;
     PiAPrior = c(5, nop, 10,10); PiAStart = c(5/(nop+5), 10/20); 
   } else {
-    ##
     FirstRandom = -1;  tauEndList = NULL; CFirstRandom = -1; CtauEndList = NULL;
     PiAPrior = c(15, nop+10);  PiAStart = c(15 / (nop+25));
   }
-  ## Set Noise Size at something relative to signal, Robit-ness, Beta
   if (dfRobit >= 0) {
-    n = 500;
-    Sigma = 3;
+    n = 200;
+    Sigma = 6;
   } else {
     n= 60;
     Sigma = 6;
@@ -214,8 +147,6 @@ require(R.oo, warn.conflicts=FALSE, quietly=TRUE);
   
   if (is.null(dfRobit) || dfRobit < 0) {
     dfRobit = NULL;  YY = Y
-  }  else {
-    YY = Z;
   }
   
   ##BetaStart = MyEM2Lasso$ReturnBetas;
@@ -263,7 +194,21 @@ ABS = BayesSpikeRegression(Y=YY,X=X, BetaStart = BetaStart,
     TBSR5 = ABS$TBSR5, StartIter = 0, EndIter = 500,
     Verbose = 0, SubSetCoords = NULL, DoLogitPostProb = FALSE,
     DrawBeta = TRUE) 
-    
+
+ ## This will draw Posterior probability of Coda Likelihood.  
+ plot(ABS$PostProbCodaList);
+ 
+ ABS$PostProbBufferFile;  ## list last Buffer File saved to, if saved.
+ 
+   
+try(require(lattice, quietly=TRUE, warn.conflicts=FALSE), silent=TRUE);
+try(require(coda, quietly=TRUE, warn.conflicts=FALSE), silent=TRUE);
+try(require(R.methodsS3, quietly=TRUE, warn.conflicts=FALSE), silent=TRUE);
+try(require(R.oo, quietly=TRUE, warn.conflicts=FALSE), silent=TRUE);
+try(require(corpcor, quietly=TRUE, warn.conflicts=FALSE), silent=TRUE);
+require(BayesDiallel, quietly = TRUE, warn.conflicts=FALSE);
+require(R.oo, warn.conflicts=FALSE, quietly=TRUE);
+
 ###############################################################################
 ## First Example Piximus Diallel Mouse Data.
 data(PiximusData);
@@ -326,41 +271,19 @@ if (length(list.files("C:")) > 0) {
  try(dir.create("~/Stat"));  try(dir.create("~/Stat/BayesSpikeSaves"));
   BSSaveDir = "~/Stat/BayesSpikeSaves"
 }
-MyProcTime = tSeq(proc.time()[1]);
-BSSaveDir  = paste(BSSaveDir, MyProcTime, sep="");  ## add a time stamp to analysis
-  
 AFD2 = DiallelAnalyzer(data = Piximus.Data, father.strain="father.strain.name",
    mother.strain="mother.strain.name", phenotype="MouseWeight", is.female="is.female",
    sep="", FixedEffects = NULL,
    RandomEffects = NULL, 
-   Models=Example.Piximus.Models[1:2], sigmasq.start = 1,  numChains = 5,  lengthChains=2500,
+   Models=Example.Piximus.Models, sigmasq.start = 1,  numChains = 5,  lengthChains=2500,
    burnin = 1,
    DIC.Only=FALSE,  tauPriorFile = Example.Piximus.tau.Prior.Info,
    DoBayesSpike = TRUE, BSSaveDir = BSSaveDir);
    
 ## Get a summary of the Coda Chains for first Diallel Model
-summary(AFD2$BS$CodaList)
-plot(AFD2$BS$CodaList);
-plot.hpd(AFD2$BS$CodaList);
-
-SaveIn <- paste(BSAFD$SaveDir, "//AttemptSave//", sep="");
-dir.create(SaveIn, showWarnings=FALSE);
-try(BSAFD$save());
-
-##try(save(BSAFD, paste(SaveIn, "//SaveBayesSpikeCLL.RData", sep="")));
-##ARP <- BSAFD$TBSR5;
-##myF <-  paste(SaveIn, "//TBSR5TrySave.RData", sep="")
-##try(save(ARP, file = myF));
-
-
-try(
-  load(paste(BSAFD$TBSR5$SaveDir, "//AttemptSaveDir//PartSaveListTBSR5.RData"));
-## This should attach a list object called "MyList" to the global environment
-## To reload complete MyList object into a BayesSpike Object run  function
-##                                 "ReLoad()"
-##  
-library("BayesSpike");
-NewBayesSpikeLoadIn <- ReLoad(MyList);
+summary(AFD2$BSAFD$CodaList)
+plot(AFD2$BSAFD$CodaList);
+plot.hpd(AFD2$BSAFD$CodaList);
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

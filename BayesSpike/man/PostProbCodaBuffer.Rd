@@ -1,5 +1,6 @@
 \name{PostProbCodaBuffer}
 \alias{PostProbBuffer}
+\alias{postprobcodabuffer}}
 \alias{PostProbCodaBuffer}
 \alias{PostProbCoda}
 \alias{GenerateProbCodaList}
@@ -57,10 +58,18 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
 \item{PostProbCodaList}{Additional name for PostProbBuffer.}
 }
 \details{
- These are functions that are 
+ These Buffers and Lists are uncompressed versions of the CODA chains that are saved to the disk.
+ 
+ Each draw of "\eqn{P(B_j | \vec{\beta}-\beta_j, Y)}{P(B_j | All \beta not \beta_j, Y)}" is a marginal
+ posterior integration value to decide whether a coefficient should enter or exit the model.
+ 
+ For draws for \eqn{\tau^2_k}{\tau^2_k} the switching sampler generates importance draws, and a weighted average of 
+ these draws are used to create one MIP for all \eqn{\beta_j}{\beta_j} related to a group k.
+ 
+ Note that this is based upon a "Posterior Probability of Inclusion" measured on each draw, and not just 1's and 0's for coordinate inclusion events.
 }
 \value{
-    \item{PostProbCodaList}{}
+    \item{PostProbCodaList}{A Coda list with all coordinates represented an MIPs stored.}
 }
 \references{ Diallel Paper, pending BayesSpike submission }
 \author{ Alan Lenarcic, Will Valdar }

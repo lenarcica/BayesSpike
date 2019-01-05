@@ -7795,7 +7795,7 @@ double BayesSpikeCL::CalcNewProb(int LenBeta, double *Beta,
             Total += log(1.0 - REAL(rPriorProbTau->asSexp())[ot]);
           } else if (REAL(rPriorProbTau->asSexp())[ot] < 0.0) {
              double FAC1 = fabs(REAL(rPriorProbTau->asSexp())[ot]);
-             Total += log(1.0 - (PiA2 * FAC1)/(PiA2*FAC1 + 1.0-PIA2));
+             Total += log(1.0 - (PiA2 * FAC1)/(PiA2*FAC1 + 1.0-PiA2));
           }
         }
         ot++;
@@ -7846,7 +7846,7 @@ double BayesSpikeCL::CalcNewProb(int LenBeta, double *Beta,
             Total += log(REAL(rPriorProbTau->asSexp())[ot]);
         } else if (REAL(rPriorProbTau->asSexp())[ot] < 0.0) {
              double FAC1 = fabs(REAL(rPriorProbTau->asSexp())[ot]);
-             Total += log((PiA2 * FAC1)/(PiA2*FAC1 + 1.0-PIA2));
+             Total += log((PiA2 * FAC1)/(PiA2*FAC1 + 1.0-PiA2));
         }
       }
     } 

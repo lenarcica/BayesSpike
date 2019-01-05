@@ -4,9 +4,27 @@
 //   (c) 2011 Alan Lenarcic                                                   */
 //                                                                            */
 //   A slice sampler based approach to get long tailed truncated T draws      */
-//  in one or a few slice samples.                                            */
+//  in one or a few slice samples.  This is not the most elegant or quickest  */
+//  solution to the challenging truncated T problem, but it works well enough */
+//  for infrequent need of Robit data.                                        */
 //                                                                            */
 // ========================================================================== */
+/******************************************************************************/
+//// LICENSE INFO: C CODE
+//  This program is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation; either version 2 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  A copy of the GNU General Public License is available at
+//  https://www.R-project.org/Licenses/
+//
+/******************************************************************************/
 #ifndef TRUNCNORMH
   #include "TruncNorm.h"
   #define TRUNCNORMH 0
