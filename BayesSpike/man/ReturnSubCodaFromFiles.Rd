@@ -3,6 +3,9 @@
 \alias{ReturnSubcodafromfiles}
 \alias{ReturnSubCodafromfiles}
 \alias{ReturnSubCodaFromfiles}
+\alias{GiveCounts}
+\alias{GiveCountFrequency}
+\alias{GiveCodaSubset}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Load in Coda from compressed files}
 \description{
@@ -44,6 +47,16 @@
    file, the "D" file that records the actual Beta drawn values.  Tau parameters
    get their own files as well.  A file of Rao-blackwellized posterior probability of activation
    parameters is also saved as a file.
+   
+   Note that a model might include 100K plus parameters, and one cannot load a complete 10,000 iteration by 100K parameter chain
+     easily into memory.  Usual use cases only want to select the top 10 to 100 parameters that had large MIP probability
+     in the chain and this code will retrieve a code matrix only with those parameters.
+     
+   Note that Beta parameters will be a different chain than Tau parameters.  
+   There are also posterior model probabilities, posterior inclusion parameter chains, and draws for Y,w in logistic/Probit samples in
+     other stored buffer chains if necessary.
+   
+   \code{GiveCodaSubset()} is the .Call C function used.
 }
 \value{
     BayesSpikeRegression serves as a wrapper function to write and read these files.

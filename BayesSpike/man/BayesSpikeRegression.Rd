@@ -68,6 +68,8 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
   \item{NumChains}{Number of chains to run.}
   \item{\code{\link{SaveDir}}}{Save information directory, see \code{\link{SaveDir}} for 
   description of BayesSpike saving buffer.}
+  \item{\code{\link{FileName}}}{ Choose a unique header name for MCMC compressed files and RData}
+  \item{\code{\link{FileSave}}}{ Additional File Save information.  }
   \item{CauchyEpsilon}{A Cauchy convergence parameter, useful in the \code{\link{SampleNewTaus}} operation}
   \item{MaxIters}{A Cauchy max iters parameter, useful in the \code{\link{SampleNewTaus}} operation}
   \item{EarlyEndStep}{Integer, if greater than zero sets a stopping test function, stops Gibbs sampler on a given step (samplign function) at time EarlyEndtt.}
@@ -84,12 +86,16 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
   \item{CpBuffLongCI}{Integer, How long should Long (No shrinkage to Zero) Buffer should be of size}
   \item{\code{\link{WritePostProbBuffer}}}{Whether to store Posterior Probabilities in Coda Chains}
   \item{burnin}{For calculations with MCMC chains, including drawing buffers, what initial position in chain to use as post-mixing time}
-
+  \item{\code{\link{EEMergeEvery}}}{ How often to perform a EE merge step if necessary. }
   
 }
 \details{
  Analysis object is a "Rcpp modules" object or imbedded C++ class with multiple
    access vectors
+   
+   
+  Note that recentering function is usually optional on data.  A matrix as described in
+  BayesSpike Paper Section 3.1 is found at \code{\link{MakeAM}}
 }
 \value{
     Object analysis object is a "\code{\link[Rcpp]{Rcpp}} module" of time , with various properties and methods
@@ -128,6 +134,7 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
   \code{\link[coda]{mcmc}},
   \code{\link[Rcpp]{Rcpp}}, \code{\link[R.oo]{R.oo}}, 
   \code{\link[methods]{ReferenceClasses}},
+  \code{\link{MakeAM}},
   \code{\link{Save}}, \code{\link{ReLoad}}
  }
 \examples{

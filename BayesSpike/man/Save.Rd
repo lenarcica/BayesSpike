@@ -7,6 +7,8 @@
 \alias{reload}
 \alias{Reload}
 \alias{ReLoad}
+\alias{FileName}
+\alias{FileSave}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ BayesSpike package }
 \description{
@@ -33,6 +35,15 @@
 
  Analysis object is a "Rcpp modules" object or imbedded C++ class with multiple
    access vectors
+   
+ Note that, when this function is working, one can save a RData with all information
+ necessary to reconstruct a BayesSpikeCL object from the state it was in when
+ a "BayesSpikeCL"$save() command was run.  
+ 
+  Note that \code{\link{ReturnSubCodaFromFiles}} describes how to recover
+   coda chains from saved buffers usable for MCMC.  In general, these files will be saved to
+   separate files and directories and only loaded as needed into CODA.
+   
 }
 \value{
     Object analysis object is a "Rcpp module", with various properties and methods

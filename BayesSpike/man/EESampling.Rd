@@ -9,6 +9,7 @@
 \alias{DoEEProbSort}
 \alias{EEProbSortWidth}
 \alias{BayesSpikeMergeAndPriors}
+\alias{eemergeevery}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Equi-Energy Sampling for Bayes Spike}
 \description{
