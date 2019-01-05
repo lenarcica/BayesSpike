@@ -73,7 +73,12 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
    a new tau.  
    
    For efficiency's sake, every \eqn{\mathbb{J}(k)}{J(k)} group is a consecutive list of
-    indices.  
+    indices. 
+    
+    These parameters are about the shape and the integration size of the active density for a group k.
+    
+    To set prior probability of inclusion, relative or absolute for each group k, use \code{\link{PriorProbTau}} element to modify
+    the effect of \code{\link{OnPiA}} against each parameter. 
 }
 \value{
     Object analysis object is a "Rcpp module", with various properties and methods

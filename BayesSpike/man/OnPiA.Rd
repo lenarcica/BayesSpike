@@ -1,4 +1,5 @@
 \name{OnPiA}
+\alias{OnPiA}
 \alias{onpia}
 \alias{PiA}
 \alias{OnPiD}
@@ -64,12 +65,14 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
       the user is setting a prior distribution that learns activation.  For large
       parameter sets, it should be desired to have \eqn{\pi_{\mbox{\tiny{$\mathcal{A}$}}}}{piA}
       small for large sparsity.  Having a Beta distrbituion for PiAPrior
-      which has most mass near zero is important.  
+      which has most mass near zero is important. 
+      
+   Fixed and Group Parameters can get additional prior information on inclusion or exclusion given 
+   by the user through \code{\link{PriorProbFixed}} and \code{\link{PriorProbTau}}.
 }
 \value{
     Object analysis object is a "Rcpp module", with various properties and methods
-     \item{CodaList}{Coda mcmc table list of output if generated}
-     \item{Beta}{Current Beta Vector}
+     \item{\code{\link{CodaList}}}{Coda mcmc table list of output if generated.  OnPiA may be an element of this list if it is set through Beta Priors}
 }
 \references{ Diallel Paper, pending BayesSpike submission }
 \author{ Alan Lenarcic, Will Valdar }

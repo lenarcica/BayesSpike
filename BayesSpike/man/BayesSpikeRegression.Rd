@@ -52,6 +52,8 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
   \item{mStart}{Mean default to give to activated random effects groups inverse-gamma tau prior distribution }
   \item{Verbose}{Toggle to deliver messages during algorithm run}
   \item{\code{\link{PiAPrior}}}{A Prior for PiA}
+  \item{\code{\link{PriorProbTau}}}{Prior probability of inclusion optional extended user input beyond OnPiA for groups}
+  \item{\code{\link{PriorProbFixed}}}{Prior probability of inclusion optional extended user input beyond OnPiA for solitary, ungrouped, coefficients}
   \item{\code{\link{SigmaPrior}}}{A prior for noise parameter OnSigma}
   \item{\code{\link{OnPiA}}}{Current \eqn{\pi_{\mbox{\tiny{$\mathcal{A}$}}}}{piA} parameter.}
   \item{\code{\link{OnSigma}}}{Current \eqn{\sigma^2}{sigma^2} noise paramter.}
@@ -100,10 +102,10 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
 \value{
     Object analysis object is a "\code{\link[Rcpp]{Rcpp}} module" of time , with various properties and methods
      \item{CodaList}{Coda mcmc table list of output if generated}
-     \item{Beta}{Current Beta Vector}
+     \item{\code{\link{OnBeta}}}{Current Beta Vector}
    \item{\link{PostProbBuffer}}{Buffer of information holding posterior probability information.}
      \item{\link{PostProbCodaList}}{Final Coda List of information holding posterior probability information.}
-     \item{OnTau}{Current Draw of Tau random effects}
+     \item{\code{\link{OnTau}}}{Current Draw of Tau random effects}
      \item{XtX}{Current Weighted part matrix of correlations}
      \item{XtY}{Current Weighted part vector of correlations}
      \item{XtResid}{Current XtResid vector or 

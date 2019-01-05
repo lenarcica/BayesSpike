@@ -14,7 +14,7 @@ Matrix AM was described in Section "3.1" of the BayesSpike Paper.
 
 This matrix can be used to transform any linearly independent group of n columns 
 assigned to a group parameters into
-ideally a set of n-1 set that removes an additive dependence constraint (i.e. a+b+c+d+e..==0)
+ideally a set of n-1 set that removes an additive dependence constraint (i.e. \eqn{a+b+c+d+e...=0}{a+b+c+d+e..==0})
 
 It is used in \code{\link{BayesSpikeFromAutoDiallel}} so that selection is known
 to operate on restricted columns.
@@ -49,9 +49,12 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
 \arguments{
   MakeAM is a function that takes one input "n".
   
-  It constructs a transformation matrix.  This matrix can be transposed to reconstruct
-  data.  Note that \code{t(AM) %*% AM == n/(n-1) *  I(n-1)}. and thus for vectors
-    BT in R^n such that sum(BT) = 0 {centered} then  \code{(n-1)/n %*% AM %*% t(AM) %*% BT  -BT = 0}
+  It constructs a transformation matrix.  
+  
+  This matrix can be transposed to reconstruct
+  data.  Note that \eqn{M^T{}M=n/(n-1)\times{}I(n-1)}{M^T*M==n/(n-1)*I(n-1)}, and thus for vectors
+    \eqn{\beta\in R^n}{\beta in R^n} such that \eqn{\sum\beta=0}{sum(\beta)==0} centered then  
+    \eqn{\frac{n-1}{n}M{}M^T\beta-\beta = 0}{(n-1)/n*M*M^T*BT-\beta==0}.
 
 }
 \details{
@@ -64,9 +67,10 @@ original X scale,   if we  manipulate of columns of X, to be particularly accura
    a slight adjustment of the "OnPiA" probability of inclusion.  
    
    This is because the transformation "M" adds a multiplicative factor of det|M| to a calculation.
-    "int f(XBeta) Prior(Beta) dBeta = int f(XM Betaprime) Prior(Betaprime) M dBetaprime"
+    "\deqn{\int f(X \beta) p(\beta) d\beta = \int f(X \mathbf{M} \beta') p(\beta\') \mathbf{M} d\beta\' }{%
+int f(XBeta) Prior(Beta) dBeta = int f(XM Betaprime) Prior(Betaprime) M dBetaprime}"
 
-   That said it isn't clear that, once one has demanded an M M^T correlation structure on Beta,
+   That said it isn't clear that, once one has demanded an \eqn{\mathbf{M}\mathbf{M}^{T}}{"M * t(M)"} correlation structure on Beta,
    that one's relative a opinion on the prior inclusion of the "tau^2_k" isn't intended for the
    transformed unconfounded parameters, instead of the confounded ones.  When groups are all confounded similarly and of similar size
    the relative effect to including or excluding a slight modification of \code{\link{PriorProbTau}} is probably more trouble than its worth.
@@ -75,9 +79,10 @@ original X scale,   if we  manipulate of columns of X, to be particularly accura
    of confounding their data has and which prior scale to choose for their data.  The modifications are performed using the inputs is effected on the \code{\link{PriorProbTau}}
    input to BayesSpike.  This is a relative change to the effect that \code{\link{OnPiA}} has on the overall group inclusion, shrinking it slightly on the Odds scale towards zero.
 }
+
+
 \value{
-    Object analysis object is a "Rcpp module", with various properties and methods
-  
+    Object analysis object is a "Rcpp module", with various properties and method 
 }                                                                        
 \references{ Diallel Paper, pending BayesSpike submission }
 \author{ Alan Lenarcic, Will Valdar }
@@ -88,7 +93,10 @@ original X scale,   if we  manipulate of columns of X, to be particularly accura
 \seealso{ \code{\link{BayesSpikeRegression}}, \code{\link{BayesSpikeFromAutoDiallel}}, \code{\link{PriorProbTau}},
   \code{\link{BayesDiallel}}, \code{\link{coda}},
   \code{\link{Rcpp}}, \code{\link{R.oo}}, \code{\link{methods::ReferenceClasses}} 
-  }
+}
+
+
+
 \examples{
 ## Load in R packages
 try(require(lattice, quietly=TRUE, warn.conflicts=FALSE), silent=TRUE);
@@ -176,7 +184,11 @@ plot(AFD2$BSAFD$CodaList);
 plot.hpd(AFD2$BSAFD$CodaList);
 
 }
+
+
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ methods }
 \keyword{ ts }% __ONLY ONE__ keyword per line
+
+  

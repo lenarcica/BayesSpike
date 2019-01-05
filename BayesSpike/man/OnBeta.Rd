@@ -1,20 +1,20 @@
-\name{CodaList}
-\alias{codalist}
-\alias{CodaList}
-\alias{codalist}
-\alias{CodaTable}
-\alias{codaTable}
-\alias{DoRecord}
-\alias{dorecord}
-\alias{Dorecord}
-\alias{doRecord}
-\alias{codaList}
-\alias{Coda}
-\alias{coda}
+\name{OnBeta}
+\alias{OnBeta}
+\alias{Onbeta}
+\alias{ActiveBeta}
+\alias{BetaActive}
+\alias{betaactive}
+\alias{OnBetas}
+\alias{onbetas}
+\alias{Onbetas}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Coda MCMC chains.}
+\title{Beta Parameter State of model}
 \description{
-   Package \link[coda]{mcmc} formatted chains for Bayesian posterior inference and plotting. 
+   The BayesSpikeCL object stores current Beta state for regression \eqn{Y=X \beta + \epsilon}{"Y = XB + error"}.
+   
+   The active coeeficients are in element \code{PropBeta} for coordinates \code{OrderedActive}.
+   
+   \code{OnBeta} will get all elements.
 }
 \usage{
 BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
@@ -44,67 +44,30 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{CodaList}{A \link[coda]{mcmc.list} list object with multiple gibbs sampler information.}
-  \item{DoRecord}{Length 7 integer flag vector deciding what content to record in mcmc chains}
-  \item{CodaTable}{Current \link[coda]{mcmc} chain.}
-
+  \item{\code{Beta}}{Access OnBeta from MBS object}
+  \item{\code{PropBeta}}{Values currently of all non zero betas}
+  \item{\code{OrderedActive}}{coordinates of the active coefficients of Beta}
+  
 
 }
 \details{
-   \code{CodaList} is an accessible element of \code{\link{BayesSpikeCpp}} object.  It is in \link[coda]{mcmc.list} format.
- 
-   However, by default, \code{\link{BayesSpikeRegression}()} does not record
-   Gibbs sampler chains in RAM memory at all, instead writing to file buffers using
-   \code{\link{SaveDir}}.  
+   A Beta fit is a Bayesian draw for the solution to \eqn{Y=X \beta + \varepsilon}{"Y = X Beta + error"}.
    
-   \code{CodaList} should contain \code{coda} chains for \code{\link{OnBeta}}, \code{\link{OnTau}}, \code{\link{OnPiA}}
-   in "beta:", "tau:", "pia: " named chains respectively.  It is also possible to retrive draws of Y for Robit/Probit and the weights w_i
-   for robit/logit/t-noise regressions. 
-   
-   Note that function \code{\link{SubCodaList}} would be used to extract subsets of the Coda chains (either delete burnin iterations, or only load in columns of choice.)
+   In the BayesSpikeRegression, this Beta vector is sparse with inclusion rate approximately \code{\link{OnPiA}}.
 }
 \value{
-To store samples in RAM, the vector \code{DoRecord}
-   which is length 7, must have values set to 1 (as opposed to 0) as logical flags.  For the seven locations in DoRecord toggle recording of te following information:
-   
-    \item{1}{Record \code{\link{OnBeta}} or \eqn{\boldsymbol{\beta}}{beta} Draws, even 
-     for zero valued \eqn{\beta_{j}}{beta_j}.}
-    \item{2}{Record \code{\link{OnTau}} or \eqn{\boldsymbol{\tau}^2}{tau^2} draws, even
-    for zero valued \eqn{\tau^2_{j}}{tau^2_j}.}
-    \item{3}{Record \code{\link{OnSigma}} or \eqn{\sigma^2}{sigma^2}
-     noise dispersion paramter.}
-     \item{4}{Record \code{\link{OnPiA}} or \eqn{\pi_{\mbox{\tiny{$\mathcal{A}$}}} }{piA} prior activation draws.}
-    \item{5}{Record Rao-Blackwellized posterior probabilities for activation or 
-    \eqn{P( \beta_{j} \neq 0)}{P(beta_j neq 0)} for all fixed paramters.}
-   \item{6}{Record Rao-Blackwellized  posterior probabilities for activation
-   or  \eqn{P( \tau^2_{k} \neq 0)}{P(tau^2_k neq 0)} for all random effects grouped paramters.}
-   \item{7}{Record weights \eqn{\lambda_{i}}{lambda_i} for t-dispersion paramters
-    if \code{\link{dfTNoise}} is > 0.}
-    
-   This information can rapidly clog memory, so saving to compressed files with 
-   \code{\link{SaveDir}} is considered a valuable alternative when \eqn{p}{p}
-   is large.  In this case, the option of using \code{\link{ReturnSubCodaFromFiles}}
-    (See \code{\link{SubCodaList}}) must be used, which requires a user to choose a subset
-   of paramters to reload.  
-
-    \code{\link{BayesSpikeRegression}} serves as a wrapper function to write and read these files.
-    Setting \code{NewWrite=0} will by default set \code{\link{BayesSpike}} to attempt to read currently written
-    files rather than start new chains.  If the files are only half written, then BayesSpike
-    will read in current chains and attempt to append until the chains are finished.
-    If chains are fully finished, \code{\link{BayesSpikeRegression}} will simply read in the files.
+    Object analysis object is a "Rcpp module", with various properties and methods
+     \item{\code{\link{CodaList}}}{Coda mcmc table list of output if generated.  OnPiA may be an element of this list if it is set through Beta Priors}
 }
 \references{ Diallel Paper, pending BayesSpike submission }
 \author{ Alan Lenarcic, Will Valdar }
 \note{ 
   "TBSRoo"  is a class using R.oo which we would like to deprecate in favor of 
   an R5 class, "\code{\link{TBSR5}}"  or "\code{\link{BayesSpikeR5}}" is  the R5 storage class.
-  
-  Set \code{\link{SubCodaList}} For how harddrive stored Coda objects are loaded post algoirthm.
 }
-\seealso{ \code{\link{BayesSpikeRegression}}, \code{\link{BayesSpikeFromAutoDiallel}}, 
+\seealso{ \code{\link{BayesSpikeRegression}}, \code{\link{BayesSpikeFromAutoDiallel}}, \code{\link{OnTau}}, 
   \code{\link{BayesDiallel}}, \code{\link{coda}},
-  \code{\link{Rcpp}}, \code{\link{R.oo}}, \code{\link{methods::ReferenceClasses}},
-  \code{\link{SubCodaList}}
+  \code{\link{Rcpp}}, \code{\link{R.oo}}, \code{\link{methods::ReferenceClasses}}
   }
 \examples{
 ## Load in R packages
