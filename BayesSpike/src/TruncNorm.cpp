@@ -1,9 +1,10 @@
 //========================================================================== */
 //                                                                            */
-//   Filename.c                                                               */
-//   (c) 2011 Author                                                          */
+//   TruncNorm.c                                                              */
+//   (c) 2011 Alan Lenarcic                                                   */
 //                                                                            */
-//   Description                                                              */
+//   A slice sampler based approach to get long tailed truncated T draws      */
+//  in one or a few slice samples.                                            */
 //                                                                            */
 // ========================================================================== */
 #ifndef TRUNCNORMH

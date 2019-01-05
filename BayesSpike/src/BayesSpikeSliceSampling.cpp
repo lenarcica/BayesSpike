@@ -4,6 +4,8 @@
 /*   (c) 2011 Alan Lenarcic                                                   */
 /*                                                                            */
 /*   Modified Splice Sampling For BayesSpikeCL  RCpp class                    */
+/*   This is a demonstration of the Switching Algorithm as implemented        */
+/*    which allows for a sparse Tau Vector and thus Group Sparse Sampling     */
 /*                                                                            */
 //  The Bulk of this file is designed to maximize, slice sample, and
 //  eventually determine the integrated area of a f_2(tau_k) group parameter.
@@ -17,6 +19,22 @@
 //  "BayesSpikeHelpers.cc", and that many of the functions here serve as Rcpp
 //  wrappers to generate draws of f_2 and investigate their quality.
 /* ========================================================================== */
+/******************************************************************************/
+//// LICENSE INFO: C CODE
+//  This program is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation; either version 2 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  A copy of the GNU General Public License is available at
+//  https://www.R-project.org/Licenses/
+//
+/******************************************************************************/
 #ifndef BAYESSPIKECPPH
   #include "BayesSpikeCpp.h"
   #define BAYESSPIKECPPH 0

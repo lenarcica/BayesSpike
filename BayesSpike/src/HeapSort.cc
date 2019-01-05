@@ -1,11 +1,12 @@
 /******************************************************************************/
-/*                                                                     */
-/*  HeapSort.h                                                                 */
-/*                                                                     */
-/*   Based upon Numericla recipes Heap Sort                                                                  */
-/*                                                                     */
-/*                                                                     */
-/*                                                                     */
+/*                                                                            */
+/*  HeapSort.cc                                                               */
+/*   Adapted 2013 by Alan Leanarcic                                           */
+/*   Adapted code based upon Numerical recipes Heap Sort                      */
+//  One version of these recipes found at: 
+// https://www.cec.uchile.cl/cinetica/pcordero/MC_libros/NumericalRecipesinC.pdf
+/*                                                                            */
+/*                                                                            */
 #ifndef HEAPSORTH
   #define HEAPSORTH 1
   #include "HeapSort.h"
@@ -73,6 +74,15 @@ int FindInMe(int LengthList, double *MyDoubles, double FindMe) {
   return(iLarge);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// HeapSortAll
+//
+// This code is adapted from Numerical Recipes in C:
+// https://www.cec.uchile.cl/cinetica/pcordero/MC_libros/NumericalRecipesinC.pdf
+//
+// Chapter 8. Sorting, page 335-336, hpsort algorithm
+//
+// It has been modified to return sort indexes instead of sort the actual Doubles array.
 int *HeapSortAll(int N, double *Doubles) {
 int *OutIntii = (int*)Calloc(N, int);
 unsigned long i=0, ir, j, l;
@@ -111,6 +121,15 @@ for (;;) {
 return(OutIntii);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// HeapSortAll
+//
+// This code is adapted from Numerical Recipes in C:
+// https://www.cec.uchile.cl/cinetica/pcordero/MC_libros/NumericalRecipesinC.pdf
+//
+// Chapter 8. Sorting, page 335-336, hpsort algorithm
+//
+// It has been modified to return sort indexes instead of sort the actual Doubles array.
 int *HeapSortAll(int N, int *Doubles) {
 int *OutIntii = (int*)Calloc(N, int);
 unsigned long i=0, ir, j, l;
@@ -149,7 +168,16 @@ for (;;) {
 return(OutIntii);
 }
 
-
+////////////////////////////////////////////////////////////////////////////////
+// HeapSortGot
+//
+// This code is adapted from Numerical Recipes in C:
+// https://www.cec.uchile.cl/cinetica/pcordero/MC_libros/NumericalRecipesinC.pdf
+//
+// Chapter 8. Sorting, page 335-336, hpsort algorithm
+//
+// It has been modified to return sort indexes instead of sort the actual Doubles array.
+// In this case, the array for "OutIntii" is suplied by the user of the function.
 int HeapSortGot(int N, int *OutIntii, double *Doubles) {
 //int *OutIntii = (int*)Calloc(N, int);
 unsigned long i=0, ir, j, l;
@@ -188,6 +216,8 @@ for (;;) {
 return(1);
 }
 
+// ReversString
+//  Just a bad algorithm to revserse an integer string
 int ReverseString(int N, int *ReverseScores) {
   int HalfN = ((int) floor(N/2.0));
   int ii;

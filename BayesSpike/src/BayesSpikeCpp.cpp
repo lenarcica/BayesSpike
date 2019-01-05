@@ -1,7 +1,7 @@
 /* ========================================================================== */
 /*                                                                            */
 /*   BayesSpikeCpp.cpp                                                        */
-/*   (c) 2011 Alan Lenarcic                                                   */
+/*   (c) 2011-2019 Alan Lenarcic                                              */
 /*                                                                            */
 /*   Description                                                              */
 /*                                                                            */
@@ -11,18 +11,35 @@
 /*                                                                            */
 /*   Most functions here are stated in "BayesSpike.h"                         */
 /*   These are mostly helper functions for the package                        */
+/*   They are predominantly commited to Coordinate Descent Operations         */
+/*   such as growing and shrinking models and the "XtResid" matrix.           */
 /*                                                                            */
 /*   "BayesSpikeGibbs.cpp" contains the main "RunAlgorithm" definition        */
 /*   "BayesSpike.h" contains the class description and constructor/destructor */
-/*   "BayesSpikeTau.cpp" contains info on the slice sampling group sampling   */
 /*    draw.                                                                   */
-/*                                                                            */
+/*   "BayesSpikeSliceSampling.cpp" conducts slice sampling for Tau Draws      */
 /*                                                                            */
 /*                                                                            */
 /*                                                                            */
 /*                                                                            */
 /*                                                                            */
 /* ========================================================================== */
+/******************************************************************************/
+//// LICENSE INFO: C CODE
+//  This program is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation; either version 2 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  A copy of the GNU General Public License is available at
+//  https://www.R-project.org/Licenses/
+//
+/******************************************************************************/
 #ifndef BAYESSPIKECPPH
   #include "BayesSpikeCpp.h"
   #define BAYESSPIKECPPH 0
@@ -638,6 +655,9 @@ int BayesSpikeCL::Resize(double Factor) {
   } 
   return(1);
 }
+
+//////////////////////////////////////////////////////////////////////////////////
+// Check integrity of pXtX storage of squared covaraince for active coefficients.
 int BayesSpikeCL::CheckpXtX() {
   double *Goes = NULL;
   if (OnKappaS <= 0) {
@@ -715,6 +735,10 @@ int BayesSpikeCL::CheckpXtX() {
 
   return(1);
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Check that on resizing of pXtX, kXFinder, etc that memory is intact and that
+//  values that should sum to each other (even with weightw Wi) are still stable.
 int BayesSpikeCL::CheckResizeIntegrity() {
   Rprintf("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
   Rprintf("<<< CheckResizeIntegrity(tt=%d): About to do.\n", tt); R_FlushConsole();
@@ -926,6 +950,14 @@ int BayesSpikeCL::CheckResizeIntegrity() {
   return(1); 
 }
 
+
+////////////////////////////////////////////////////////////////////////////////
+//    FillsBetaFromPropBetaAndCompute()
+//
+//       PropBeta, which is only of length Active coefficients, is stuffed into
+//   a vector to replace all p active coefficients.  We don't normally need
+//   to do multiplications from the Beta vector, but this is helpful for XtResid
+//   update and T noise update.
 int BayesSpikeCL::FillsBetaFromPropBetaAndCompute() {
   int ii;
   if (NumActive > p) { 
@@ -966,9 +998,11 @@ int BayesSpikeCL::FillsBetaFromPropBetaAndCompute() {
 }
 
 ////////////////////////////////////////////////////////////////////////////
-//  GiveItAChanceAndKillUselessCoeficients
+//  GiveItAChanceAndKillUselessCoeficients()
 //
-//     Tries to kill off a bunch of coefficients that are too small to matter.
+//     Tries to kill off a bunch of coefficients that are too small to matter,
+//  and/or which might have only been present in the model on a rare
+//  occasion, many iterations ago.
 //
 int BayesSpikeCL::GiveItAChanceAndKillUselessCoeficients(int PleaseKill) {
   int *RankMyUselessCoefficients = NULL;
@@ -1490,6 +1524,11 @@ int BayesSpikeCL::GiveItAChanceAndKillUselessCoeficients(int PleaseKill) {
   return(1);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//  PrintCharIntVector()
+//
+//    Some of these are unnecessary print equations.
+//
 void PrintCharIntVector(int *Go, char *AGo, int Length, int ATen) {
   Rprintf("Here is %s which has length %d\n  ", AGo, Length);
   if (Length <= 0) { return; }
@@ -4079,6 +4118,9 @@ int BayesSpikeCL::FillSmallXtX() {
   return(1);
 }
 
+// SEtupXjSq
+// This is just \sum_i X_ij*X_ij for each column.
+// This determines some critical information for Coordinate Descent signals.
 int BayesSpikeCL::SetupXjSq() {
   if (XjSq == NULL) {
     RMemGetD(XjSq, "XjSq", p);
@@ -4123,7 +4165,7 @@ int BayesSpikeCL::SetupOrderAttack() {
 //  MT is composed of all pieces of TauOfFContainer
 //    These are pieces of information run in SampleANewTau(iOnii)
 //    And are set for the group iOnii just previously run
-//
+//  This simple function returns a SEXP with all of the state information.
 SEXP BayesSpikeCL::get_MT() {
   SEXP oD = R_NilValue;
   SEXP oR = R_NilValue;
@@ -4237,7 +4279,8 @@ SEXP BayesSpikeCL::get_MT() {
 //
 //   The deleting function that performs garbage collection.
 //
-//
+//   Ideally this ensures all attached SEXPs are detached, all memory is freed
+//   from HEAP, and if there is a memory leak, this will usually initiate a segfault.
 void BayesSpikeCL::DeleteMe() {
 ////////////////////////////////////////////////////////////
   //  Re-enter R and Kill TBSRoo, TBSR5
@@ -4667,14 +4710,20 @@ void BayesSpikeCL::DeleteMe() {
   return;
 
 }
+
+// Call DeleteMe()
 void DDeleteStuff(BayesSpikeCL *AB) {
   AB->DeleteMe();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+//  "FinalizerForBayesSpikeCL()"
+//
 //  A Finalizer is an operation that R garbage collection will call to
 //   delete a Module object never determined.
-//
+//  Rooting out and fully deleting BayesSpike is the hardest challenge.
+//  However, typically, once DeleteMe has been called, most of the memory
+//  trapped in the BayesSpike Object has been deleted.
 //
 void FinalizerForBayesSpikeCL(BayesSpikeCL *AcL) {
   if (AcL->BeingDestroyed == 1) {
@@ -4756,11 +4805,12 @@ return(Rf_pt(PP, Df, doLeft, doLog));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//  ProbPosterior
+//  ProbPosterior()
 //
 //     Function for assembling the current Posterior functions.
 //
-//
+//     This includes the unnormalized Posterior value  P(Theta|Y) for a 
+//  MCMC sample of Theta, useful in importance sampling.
 //
 double BayesSpikeCL::ProbPosterior() {
   double On1 = 0.0; int ii = 0;  double On2 = 0.0;  double On = 0.0;
@@ -5244,7 +5294,13 @@ SEXP BayesSpikeCL::get_RegionMIP() {
     if (RMIP == NULL) { return(R_NilValue); }
     return(RMIP->asSexp());  
   }
-  
+
+////////////////////////////////////////////////////////////////////////////////
+// CheckkXFinder(): 
+//
+//  This code writes to and attempts to find numerical inconsistencies or 
+// memory leaks inside the kXFinder.
+//  
 int BayesSpikeCL::CheckkXFinderError(char* aS) {
   if (Verbose >= 0) {
     Rprintf("--- BayesSpikeCpp.cpp:::CheckkXFinderError(tt=%d/%d: OnKappaS=%d/%d): let's check performance after %s \n",
@@ -5331,7 +5387,8 @@ int BayesSpikeCL::CheckkXFinderError(char* aS) {
 ////////////////////////////////////////////////////////////////////////////
 // modBayesSpikeCL:: Rcpp functions for BayesSpike.cc
 //
-//
+//  These functions, fields, and methods are attached and callable, to BayesSpikeCL object 
+//  (usually termed "MBS" in the R Code).
 //
 extern "C" {
 RCPP_MODULE(modBayesSpikeCL) {

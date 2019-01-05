@@ -1,7 +1,7 @@
 /* ========================================================================== */
 /*                                                                            */
 /*   BayesSpikeCpp.h                                                          */                              
-/*   (c) 2012 Alan Lenarcic                                                   */
+/*   (c) 2011-2019 Alan Lenarcic                                              */
 /*                                                                            */
 /*   Description                                                              */
 /*   Header File For BayesSpike Project, Defines BayesSpikeCL RCpp class      */
@@ -15,13 +15,30 @@
 /*     as well as getter/setters                                              */
 /*                                                                            */
 /*  Most Algorithm functions are in "BayesSpikeGibbs.cpp"                     */
-/*  The Group Selector slice sampler is in "BayesSpikeTau.cpp"                */
 /*  Nonclass Helper functions are in "BayesSpikeHelpers.cpp"                  */
+/*  The switching step is performed in "BayesSpikeSliceSampling.cpp"          */
 /*                                                                            */
 /*                                                                            */
 /*                                                                            */
 /*                                                                            */
 /* ========================================================================== */
+
+/******************************************************************************/
+//// LICENSE INFO: C CODE
+//  This program is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation; either version 2 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  A copy of the GNU General Public License is available at
+//  https://www.R-project.org/Licenses/
+//
+/******************************************************************************/
 
 // Uncomment to activate timing systems
 //#define DOTIMEH 1
@@ -154,6 +171,8 @@ typedef  long int bufferILocType;
    #endif
 #endif
 
+// This MACRO is called in multiple Chains when the "OrderedActive" state
+//  needs to be reset.  The Active parameters are stored in order of original j index.
 #ifndef MRFRefreshOrderedActive
  #ifdef DOTIMEH 
  #define MRFRefreshOrderedActive(FF, charS, step, Loc) if (Verbose > 1) { \
@@ -194,7 +213,8 @@ typedef  long int bufferILocType;
    
 #define DefaultMaxCODA 10000
 // These functions are self defined deletion/free macros for memory management
-//
+//   They guarantee Print statements to check that the data was freed correctly
+//   If some pointer is damaged these will print information about the failure event.
 #ifndef DDelete
   #define DDelete(X, charS)  if (Verbose > 2) {  \
     Rprintf("deleting  %s \n ", charS); R_FlushConsole(); } \
@@ -220,6 +240,8 @@ typedef  long int bufferILocType;
 #ifndef ANINT
   #define ANINT(x,ii) ( (int) Rf_isInteger((x)) ? INTEGER((x))[(ii)] : (int) REAL((x))[(ii)] )
 #endif
+
+// These functions help grab arrays of memory of some type (usually D for double, I for integer)
 #ifndef MemError
   #define MemError(X, charS) if ( (X) == NULL ) {  \
     Rf_error("%s could not be allocated \n", (char*) charS); }
@@ -391,8 +413,13 @@ inline double DeriveAlpha(double D, double xm2);
 //   (Friedman et. al 2007) to keep a relevant set of X^TX or wX^TX for
 //   calculation of the key XTResid vector = X^T(Y-XBeta)
 //
+//  There are at least two constructors for this function.  The destructor
+//    benefits from DeleteMe() function declared in BayesSpikeCpp.cpp
 //
-//
+//  Note that a lot of SEXP Objects supplied from R prompt, 
+//    that were encapsulated in "Rcpp:RObjects()",
+//    are instead preserved in "Acpp:AObject, RRObjects".  This is a hack replacement
+//    of old Rcpp functionality, used to get an "asSexp()" return of the wrapper.
 //using namespace Rcpp;
 //using namespace Rcpp;
 class BayesSpikeCL {

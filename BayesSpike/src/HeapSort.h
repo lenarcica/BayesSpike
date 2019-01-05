@@ -6,6 +6,11 @@
 /*  Based on Numerical Recipes in C++ Book                                    */
 /*   Experiment in sorting XTResid in order                                   */
 /*                                                                            */
+/*   Adapted code based upon Numerical recipes Heap Sort                      */
+/*  One version of these recipes found at:                                    */
+// https://www.cec.uchile.cl/cinetica/pcordero/MC_libros/NumericalRecipesinC.pdf                                                                        */
+/*                                                                            */
+/*                                                                            */
 /* ========================================================================== */
 
 

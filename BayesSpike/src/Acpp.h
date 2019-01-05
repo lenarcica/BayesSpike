@@ -49,6 +49,9 @@
 
 //#define StartListLength = 100
 
+// "RRObjects"
+// These are different from AObjects, in that that they use RCpp to wrap object in RObject.
+//  "RRObjects" will normally not have SEXP encapsulated inside and instead experiment in get___();
 class RRObject {
   Rcpp::RObject *MyRob;
   public: 

@@ -1,4 +1,13 @@
-
+################################################################################
+## BayesSpikeAndAutoDiallel
+##
+##  (c) Alan Lenarcic 2009-2018
+##
+##  Code for interacting BayesSpike with BayesDiallel R package
+##
+## This includes "MakeAM()" R function which is described in the Section 3.1
+##  which recenters linearly dependent columns in such a way that preserves
+##  the marginal variance of parameters.
 
 GetAFDAllCentNames <- function(AFD) {
   nX <- colnames(AFD$X);
@@ -842,6 +851,10 @@ BayesSpikeFromAutoDiallel <- function(AFD, Y=NULL, X=NULL,
      print("Trying to identify the AllCenteredRandomVariables Set!");
      AllCenteredRandomVariables = AFD$AllCenteredRandomVariables;
      WhatRandoms <- rep(0, length(tauEndList));
+     if (is.null(PriorProbTau)) {
+        PriorProbTau <- rep(-1, length(tauEndList));
+        try(names(PriorProbTau) <- AFD$.AllRandomVariables[1:length(tauEndList)], silent=TRUE);  
+     }
      if (FirstRandom >= 1 && FirstRandom <= NCOL(AFD$X)) {
        ABS <- FirstRandom:tauEndList[1];
      }  else {
@@ -854,15 +867,36 @@ BayesSpikeFromAutoDiallel <- function(AFD, Y=NULL, X=NULL,
          break;
        }
      }
+     ## Slight modification to PriorProbTau as described in section 3.1 to deal with centering restriction downgrade
+     if (WhatRandoms[1] > 0) {
+       VB <- PriorProbTau[1];  FAC <- (length(ABS)-1) / length(ABS);
+       if (VB > 0) {
+         try(VB <- VB * FAC / (VB * FAC+1-VB))
+       } else {
+         try(VB <- VB * FAC);
+       }
+       PriorProbTau[1] <- VB;
+     }
      if (length(tauEndList) >= 2) {
      for (iti in 2:length(tauEndList)) {
        ABS <- (tauEndList[iti-1]+1):tauEndList[iti];
+       
+       
        try(AST <- colnames(AFD$X)[ABS[1]]);
        for (gg in 1:length(AllCenteredRandomVariables)) {
          if (substr(AST, 1, nchar(AllCenteredRandomVariables[gg])) == AllCenteredRandomVariables[gg]) {
            WhatRandoms[iti] = iti;
            break;
          }
+       }
+       if (WhatRandoms[iti] > 0) {
+         VB <- PriorProbTau[iti];  FAC <- (length(ABS)-1) / length(ABS);
+         if (VB > 0) {
+           try(VB <- VB * FAC / (VB * FAC+1-VB))
+         } else {
+           try(VB <- VB * FAC);
+         }
+         PriorProbTau[iti] <- VB;
        }
      }
      }
@@ -1383,6 +1417,15 @@ rTruncT <- function(n=1, df = 1, L = NULL, U = NULL, sig=NULL, mu=NULL) {
     print("AFunctionNewUnCenteredCodaList: Finished Gathering InBetweenList"); flush.console();
   }  
   
+################################################################################
+## MakeAM()
+##
+##   This function is described in the paper Section 3.1
+## Note that AM inverse is  (n-1) / n * t(AM)
+## (Only invertible for sum zero vectors length n).
+## that said if v is a vector in n-1 with all coefficients iid N(0, a^2)
+## Then it is still true that "v'=AM %*% v" is distributed with each
+## coefficient marginally N(0,a^2), but with sum v' = 0. 
 MakeAM <- function(n) {
  ## A <- (n-2)^2+(n-2);
  ## B <- 2*(n-2)/ sqrt(n-1);
@@ -1421,9 +1464,14 @@ MakeAM <- function(n) {
       AP <- 0;  AGC <- c();
     }
     for (ii in 1:length(CenteredIndices)) {
-      try(AM <- MakeAM(1+length(CenteredIndices[[ii]])));
+      nS <- 1+length(CenteredIndices[[ii]]);
+      try(AM <- MakeAM(nS));
+      FAC <- (nS-1) / nS;  FAC = 1;  ## NOTE THAT FAC=1 is appropriate.
+      ##  nn <- 50000; a <- 5; bV <- matrix(a*rnorm((nS-1)*nn), nn, nS-1);
+      ## colSums(bV^2) / (nn-1) = ....
+      ## colSums(( bV %*% t(AM))^2)/(nn-1) = ...
       try(NewM[,AP+1:(length(CenteredIndices[[ii]])+1)] <-
-        MBS$CodaList[[tt]][,CenteredIndices[[ii]] ] %*% t(AM));
+        FAC*MBS$CodaList[[tt]][,CenteredIndices[[ii]] ] %*% t(AM);
       try(AP <- AP + NROW(AM));
       if (!is.null(ColsNames)) {
         try(AGC <- c(AGC, NewCenteredNames[[ii]]));

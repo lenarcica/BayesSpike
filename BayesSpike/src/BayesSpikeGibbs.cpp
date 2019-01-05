@@ -16,7 +16,22 @@
 /*  and what function was ran last and what part of standard order            */
 /*  the function exists in.                                                   */
 /* ========================================================================== */
-
+/******************************************************************************/
+//// LICENSE INFO: C CODE
+//  This program is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation; either version 2 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  A copy of the GNU General Public License is available at
+//  https://www.R-project.org/Licenses/
+//
+/******************************************************************************/
 
 #ifndef BAYESSPIKECPPH
   #include "BayesSpikeCpp.h"
@@ -3643,7 +3658,7 @@ int BayesSpikeCL::UpdatePiA() {
           NoShrinkRandom[OnShrinkRandom] == ii) {
         } else if (REAL(sOnTau)[ii] > 0) {  CountRandomOn++; }
       }
-    } else if (Rf_length(rPriorProbTau->asSexp()) == Rf_length(rPriorProbTau->asSexp())) {
+    } else if (Rf_length(rPriorProbTau->asSexp()) == Rf_length(sOnTau)) {
       for (ii = 0; ii < LenRandom; ii++) {
         OnMe = REAL(rPriorProbTau->asSexp())[ii];
         while (LengthNoShrinkRandom > 0 && OnShrinkRandom < LengthNoShrinkRandom &&
@@ -3656,7 +3671,7 @@ int BayesSpikeCL::UpdatePiA() {
            if(REAL(sOnTau)[ii] != 0.0) {
              CountRandomOn++;
            }
-         }
+        }
       }    
     } else {
       for (ii = 0; ii < LenRandom; ii++) {
@@ -3842,18 +3857,21 @@ int BayesSpikeCL::SampleNewTaus()  {
      if (!Rf_isNull(sPriorProbTau)) {
        OnMe = REAL(sPriorProbTau)[iOnii];
      } 
-     if (R_isnancpp(OnMe) || OnMe < 0.0 || OnMe > 1.0 || !R_finite(OnMe) ||
+     if (R_isnancpp(OnMe) || OnMe > 1.0 || !R_finite(OnMe) ||
        R_IsNA(OnMe) || R_IsNaN(OnMe)) {
-       OnMe = -1; 
+       OnMe = -1.0; 
      }
      if (OnMe < 0.0) { 
        if (Rf_length(sOnPiA) >= 2) {
          UsePiA = REAL(sOnPiA)[1];
        } else {
-        UsePiA = REAL(sOnPiA)[0];
+         UsePiA = REAL(sOnPiA)[0];
+       }
+       if (fabs(OnMe + 1.0) >= .0001) {
+          UsePiA = UsePiA * fabs(OnMe)  / ( UsePiA * fabs(OnMe) + 1.0-UsePiA); // A CHANGE
        }
       } else if (OnMe == 0.0) {
-        UsePiA = 0.0;
+        UsePiA = 0.0; 
       } else if (OnMe >= 1.0) {
         UsePiA = 1.0;
       } else {
@@ -7772,10 +7790,13 @@ double BayesSpikeCL::CalcNewProb(int LenBeta, double *Beta,
       }
       while(ot < Rf_length(sOnTau) && ot < IDTau[it]) { 
         if (rPriorProbTau != NULL && !Rf_isNull(rPriorProbTau->asSexp()) && Rf_length(rPriorProbTau->asSexp()) >= Rf_length(sOnTau) &&
-          Rf_length(rPriorProbTau->asSexp()) > ot &&
-          REAL(rPriorProbTau->asSexp())[ot] > 0.0 &&
-          REAL(rPriorProbTau->asSexp())[ot] < 1.0) {
-          Total += log(1.0 - REAL(rPriorProbTau->asSexp())[ot]);
+          Rf_length(rPriorProbTau->asSexp()) > ot) {
+          if (REAL(rPriorProbTau->asSexp())[ot] > 0.0 && REAL(rPriorProbTau->asSexp())[ot] < 1.0) {
+            Total += log(1.0 - REAL(rPriorProbTau->asSexp())[ot]);
+          } else if (REAL(rPriorProbTau->asSexp())[ot] < 0.0) {
+             double FAC1 = fabs(REAL(rPriorProbTau->asSexp())[ot]);
+             Total += log(1.0 - (PiA2 * FAC1)/(PiA2*FAC1 + 1.0-PIA2));
+          }
         }
         ot++;
       } 
@@ -7820,10 +7841,13 @@ double BayesSpikeCL::CalcNewProb(int LenBeta, double *Beta,
       }
       if (Tau[it] > 0.0 && rPriorProbTau != NULL 
         && !Rf_isNull(rPriorProbTau->asSexp()) && 
-        Rf_length(rPriorProbTau->asSexp()) > ot && 
-        REAL(rPriorProbTau->asSexp())[ot] > 0.0 
-        && REAL(rPriorProbTau->asSexp())[ot] < 1.0) {
-        Total += log(REAL(rPriorProbTau->asSexp())[ot]);
+        Rf_length(rPriorProbTau->asSexp()) > ot) { 
+        if (REAL(rPriorProbTau->asSexp())[ot] > 0.0 && REAL(rPriorProbTau->asSexp())[ot] < 1.0) {
+            Total += log(REAL(rPriorProbTau->asSexp())[ot]);
+        } else if (REAL(rPriorProbTau->asSexp())[ot] < 0.0) {
+             double FAC1 = fabs(REAL(rPriorProbTau->asSexp())[ot]);
+             Total += log((PiA2 * FAC1)/(PiA2*FAC1 + 1.0-PIA2));
+        }
       }
     } 
     if (rPriorProbTau != NULL && !Rf_isNull(rPriorProbTau->asSexp()) && Rf_length(rPriorProbTau->asSexp()) >= Rf_length(sOnTau)) {

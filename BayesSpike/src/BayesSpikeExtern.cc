@@ -1,14 +1,37 @@
 /* ========================================================================== */
 /*                                                                            */
-/*   BayesSpikeExtern.c                                                               */
-/*   (c) 2011 Alan Lenarcic                                                          */
+/*   BayesSpikeExtern.c                                                       */
+/*   (c) 2011-2019 Alan Lenarcic                                              */
 /*                                                                            */
-/*   BayesSpike Extern Functions                                                              */
+/*   BayesSpike Extern Functions                                              */
 /*                                                                            */
-/*   These functions are largely independent of BayesSpikeCpp Rcpp based functions.
-/* Predominantly this code is tasked with file reading both compressed Beta
-/* And Compressed Tau draws.
+/*   These functions are largely independent of BayesSpikeCpp Rcpp based      */
+/*, so most of these functionsare externed to "C" functions.                  */
+/*  Predominantly this code is tasked with file reading both compressed Beta  */
+/*  And Compressed Tau draws.                                                 */
+/*  Code to sort these files for EquiEnergy and long term compressed storage  */
+/*   is located here.                                                         */
 /* ========================================================================== */
+/******************************************************************************/
+//// LICENSE INFO: C CODE
+//  This program is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation; either version 2 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  A copy of the GNU General Public License is available at
+//  https://www.R-project.org/Licenses/
+//
+//  Author's recommendation: The code in BayesSpikeExtern.cc isn't very good.
+//   Commercial Operators interested in this type of functionality would be 
+//   much better off reading this material simply for advice, and
+//   implementing code for this use case from scratch. 
+/******************************************************************************/
 
 #ifndef BAYESSPIKECPPH
   #include "BayesSpikeCpp.h"
@@ -103,6 +126,12 @@ SEXP TestEntriesForSampler(SEXP sVerbose,
    return(sVerbose);
 }
 
+// Experiment in "WeightedHPD"
+//
+//  The goal here for "Logistic" draws is to use draws from a different but
+// easier to sample "Probit" distribution as an importance distribution and
+// then hope that importance samples determine HPD lengths accurate to a 
+// Logistic or Robit distribution.
 SEXP CallWeightedHPD(SEXP SortedXtX, SEXP cumSum, SEXP alphaTarget) {
   if (Rf_isNull(SortedXtX) || !Rf_isReal(SortedXtX)) {
     Rf_error("WeightedHPD, we can't do that.! SortedXtX\n");
@@ -170,6 +199,14 @@ SEXP CallWeightedHPD(SEXP SortedXtX, SEXP cumSum, SEXP alphaTarget) {
 }
 
 
+///////////////////////////////////////////////////////////////////////////////
+// GiveCodaSubset(...)
+//
+// Retrieve Coda objects into memory.
+// Extracts a Coda Subset from saved to disk files, 
+//  This is a list of matrixes of Gibbs sampler sub samples
+//  of chains.  EndIter is usually the end of the chain, StartIter is usually
+//  a burnin period.
 SEXP GiveCodaSubset(SEXP SubSetCoords, SEXP sCodaIFile, SEXP sCodaDFile,
     SEXP sStartIter, SEXP sEndIter, SEXP sVerbose) {
   int Verbose = GetFirstInteger(sVerbose);
@@ -443,7 +480,9 @@ SEXP GiveCodaSubset(SEXP SubSetCoords, SEXP sCodaIFile, SEXP sCodaDFile,
  
  
  
-
+//////////////////////////////////////////////////////////////////////////////
+// GiveCountFrequency()
+//    Populate GiveCounts SEXP with number of times a coordinate appears in the Buffer that is IFile
 SEXP GiveCountFrequency(SEXP sCodaIFile,
     SEXP sStartIter, SEXP sEndIter, SEXP GiveCounts, SEXP sVerbose) {
   int Verbose = GetFirstInteger(sVerbose);    

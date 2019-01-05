@@ -16,10 +16,31 @@
  ///////////////////////////////////////////////////////
  // MyMatrixOp.h
  //
+ //   (c) Alan Lenarcic  2009
+ //
  //   Self C coded Functions For Matrix Operation 
  //    Helpful for Running Matrices Etc.
  //
- //
+ //   Many of the Inversion code should not be used and is not used in algorithms
+ //  in preference for LAPACK Cholesky versions.
+/*****************************************************************************/
+//// LICENSE INFO: C CODE
+//  This program is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation; either version 2 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  A copy of the GNU General Public License is available at
+//  https://www.R-project.org/Licenses/
+//
+//  Author's Note that any code derived from BayesSpike would probably want to 
+//  ignore the code in this MyMatrixOp2009.h anyway.
+/******************************************************************************/
  void PrintRMatrix(double *Mat, int NR, int NC);
  void PrintRMatrix(long double *Mat, int NR, int NC);
  void PrintRMatrix(int *Mat, int NR, int NC);
