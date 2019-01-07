@@ -57,6 +57,7 @@
   an R5 class
 }
 \seealso{ \code{\link{BayesSpikeRegression}}, \code{\link{BayesSpikeFromAutoDiallel}}, 
+  \code{\link{Codajj}}, \code{\link{SaveDir}},
   \code{\link{BayesDiallel}}, \code{\link{coda}},
   \code{\link{Rcpp}}, 
   \code{\link{methods::ReferenceClasses}}, \code{\link{BaysSpike}}, \code{\link{Rcpp::Rcpp}}

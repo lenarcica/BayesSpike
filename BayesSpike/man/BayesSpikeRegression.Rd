@@ -39,9 +39,9 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{X}{\eqn{\mathbf{X} \in \mathbb{R}^{n \times p}}{X in R[n * p]}
+  \item{\code{\link{X}}}{\eqn{\mathbf{X} \in \mathbb{R}^{n \times p}}{X in R[n * p]}
     Covariates, Independent Variables for both fixed and grouped paramters.  }
-  \item{Y}{\eqn{\vec{Y} \in \mathbb{R}^{n}}{Y-vector in R^n} Dependent Variable. }
+  \item{\code{\link{Y}}}{\eqn{\vec{Y} \in \mathbb{R}^{n}}{Y-vector in R^n} Dependent Variable. }
   \item{BetaStart}{Starting \eqn{\vec{\boldsymbol{\beta}}} draw.  }
   \item{IndexFirstRandomEffect}{Index in (1:NROW(X)) of the first "random effect", also \code{FirstRandom} }
   \item{\code{\link{tauEndList}}}{Ending Indices of each group of random effects (random effects groups must be contiguous)}
@@ -78,6 +78,8 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
   \item{EarlyEndStep}{Integer, if greater than zero sets a stopping test function, stops Gibbs sampler on a given step (samplign function) at time EarlyEndtt.}
   \item{EarlyEndtt}{Integer, if greater than zero setsiteration from gibbs sampler to stop.  Stop will occur
    after running EarlyEndStep.}
+  \item{\code{\link{DoLogitPreProb}}}{Do a Logit regression approximated by df 9 Robit}
+  \item{\code{\link{DoLogitPostProb}}}{Do a Logit regression approximated by a Probit model and then use importance samplign after}
   \item{DoLongCI}{
     To save Long Intervals, this must be true in \code{\link{BayesSpikeRegression}} call.
     The "Long" Buffer is a storage of gibbs samples that are all non-zero for all p Beta coefficients
@@ -101,6 +103,10 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
    
   Note that recentering function is usually optional on data.  A matrix as described in
   BayesSpike Paper Section 3.1 is found at \code{\link{MakeAM}}
+  
+  To understand a bit more about the required submission settings \code{\link{X}} relates the requirements for input matrix X,
+  and \code{\link{tauEndList}} explains the required sorting of columns of X so that BayesSpike can identify which sets of columns belong
+  to the same group.  
 }
 \value{
     Object analysis object is a "\code{\link[Rcpp]{Rcpp}} module" of time , with various properties and methods

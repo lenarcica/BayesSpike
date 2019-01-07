@@ -1,20 +1,26 @@
-\name{RobitRegression}
-\alias{RobitRegression}
-\alias{robitRegression}
-\alias{robit}
-\alias{Robit}
-\alias{dfRobit}
-\alias{dfrobit}
-\alias{ProbitRegression}
-\alias{probitRegression}
-\alias{Probit Regression}
-\alias{probit regression}
-\alias{probit}
+\name{LogitRegression}
+\alias{Logit}
+\alias{LogisticRegression}
+\alias{logitregression}
+\alias{LogitRegression}
+\alias{DoLogitPostProb}
+\alias{DoLogitPreProb}
+\alias{dologitpostprob}
+\alias{dologitpreprob}
+\alias{DoLogit}
+\alias{dologit}
+\alias{logitregression}
+\alias{LogitRegression}
+\alias{Logistic Regression}
+\alias{logistic regression}
+\alias{logistic}
+\alias{LogisticRegression}
+
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{ Logit Regression algorithm }
+\title{ Logistic Regression algorithm }
 \description{
-  Binomial processes regression is performed by weighted regression.  Probit and
-  Robit Regression 
+  Binomial processes using Logistic regression.  
+  For Robit or Probit see \code{\link{RobitRegression}}. 
 }
 \usage{
 BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
@@ -81,27 +87,31 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
   
 }
 \details{
-  Binomial Processees can be either Robit, Probit, or \code{\link{LogisticRegression}}.  
+  Logistic regression is type \eqn{Z \sim Bernoulli(LogitInv(X \Beta))}{Z ~ Binomial(LogitInv(X \Beta))}.  These 0/1 draws
+  can be converted to implied continous draws hidden variables "Y", and then normal linear regression is performed.
+  
+  There are two choices
+  \enumerate{
+    \item{Robit Regression}{Approximating with T based implied distribution DF 9.  This option is triggered with DoLogitPreProb=TRUE set in \code{\link{BayesSpikeRegression}}}
+    \item{Probit Regression}{Use a Probit model as a cruder approximation and later use importance sampling to get credibility intervals.
+    This is faster because \eqn{X^TX}{X^TX} does not need to be reweighted.  However, the Credibility intervals may be less exact estimates}
+  } 
+
+  In any case "Y" is updated each Gibbs Sampler iteration.  For Robit Regression, Weights of type W_i for each sample are drawn, as explained
+  in \code{\link{dfTNoise}}.  Importance sampling calculates the probability of the draw given Probit or Logistic models and uses this to downweight samples
+  where the Probit is oversampling.  Logistic regression tends to have wider tails than a probit regression, hence the DFRobit of 9.
 
  Analysis object is a "Rcpp modules" object or imbedded C++ class with multiple
    access vectors.
    
   Through setting a "dfrobit >= 0" and supplying Y in {0,1}, a Robit regression is assumed.   dfrobit=0 will effect a Probit regression.
   
-  In Probit regression, Gaussian Noise is distributed for \eqn{Y\sim X \beta + \varepsilon}{Y~X \beta + e}. If "Z_i" is observed on 
-  a given side of the line, a draw from the truncated tail of the distribution is used to imply what Y_i should have been.  
-  In Robit regression draws from the truncated T distribution are affected through a slice sample approximation.  See \code{\link{TruncNorm}}
-  for description of this file.  A marginal inverse would also be an easy way to accomplish this calculation.
-  
-  Probit will typically be much faster than Robit regression, as it only involves an update of \code{\link{XTResid}} update when Y's are chaged.
-  
   If "\code{\link{DoLogitPreProb}}=TRUE", then Robit regression will be performed to near-approximate a Logit regression.  Degrees of freedom are set to 9 and the Sigma value
   is fixed.  In this case the robit is very close to a Logit regression, though
   
-  \code{\link{DoLogitPostProb}} = TRUE setting will attempt to calculate the likelihood of each drawn Beta parameter according to an importance sampling measure that 
+  DoLogitPostProb = TRUE setting will attempt to calculate the likelihood of each drawn Beta parameter according to an importance sampling measure that 
   can be used to enhance the calculation of posterior inclusion probabilities, even though the underlying robit or probit used is not exactly a logistic likelihood.
   
-
   
 }
 \value{

@@ -1,32 +1,23 @@
-\name{SaveDir}
-\alias{SaveDir}
-\alias{savedir}
-\alias{FileName}
-\alias{fileName}
-\alias{filename}
-\alias{newwrite}
-\alias{NewWrite}
-\alias{.DefaultFileDir}
-\alias{DefaultFileDir}
-\alias{defaultfiledir}
-\alias{FileDir}
-\alias{filedir}
-\alias{SetupSaveDir}
-\alias{SetupSaveFile}
+\name{tauEndList}
+\alias{tauEndList}
+\alias{tauEndList}
+\alias{tauendlist}
+\alias{TauendList}
+\alias{FirstRandom}
+\alias{firstrandom}
+\alias{CfirstRandom}
+
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Hard Drive storage space}
+\title{Cutoff points for group parameters for BayesSpike}
 \description{
-   For best results Bayes Spike requires hard-drive storage and writes in buffers
-   to multiple streams of files.  Setting \code{SaveDir} sets directory to 
-   save this information in.  By default \code{.DefaultFileDir} is set
-   on \code{BayesSpike} package load.
-   
-   Standalone \code{\link{ReturnSubCodaFromFiles}()} is used to read sub-sized
-   CodaChains from files.
-   
-   Note that the \code{\link{Save}} command is for saving a RData that can
-   be retrieved into a BayesSpikeCL module.  Furthermore the Save files are used
-   in the tables suggested by \code{\link{Codajj}} buffers.
+  For efficiency, BayesSpike assumes that the columns of matrix \code{\link{X}}
+    are sorted in an order where the first "FirstRandom-1" columns are all of the fixed
+    coordinates.  The first column with a Random Effects group occurs on column "FirstRandom",
+    and the end of that group occurs at "\code{tauEndList[1]}" which is the first entry of tauEndList.
+    The continuing columns of X are sorted by groups, and the last member of each group occurs at
+    coordinate "\code{tauEndList[j]}" with the following group having its first member occur at "\code{tauEndList[jj]}+1" 
+    and it's last member at \code{tauEndList[j+1]}.
+    
 }
 \usage{
 BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
@@ -56,36 +47,26 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{SaveDir}{Directory to save Bayes spike compressed binary files}
-  \item{FileName}{Header string to name these binary files (many postfix attachments to this filename are added)}
-  \item{.DefaultFileDir}{Default File directory for BayesSpike Package}
-  \item{NewWrite}{Default set to 1, rewrites and runs chains.  If NewWrite = 0 however,
-    BayesSpike will seek out the files on harddrive and load in a previous run without needing
-    to rerun analysis.  }  
-
+  \item{\code{tauEndList}}{End coordinate of each contiguous group in X}
+  \item{\code{FirstRandom}}{The coordinate of the first member of the first group in X.  Columns earlier than this are Fixed Effects}
 }
 \details{
-   \code{BayesSpike} saves compressed binary files to the harddrive to represent
-   draws from the Gibbs sampling distribution.  Since a Gibbs sampling chain for 
-   large p is memory-intensive, this allows considerable savings on memory.
-   
-   BayesSpike does save information to a buffer, so only when the buffer is filled is a chain of 
-   multiple samples appended to the current binary stream.  Binary files are compressed such that
-   only active variables are listed.  One file, the "I" file, lists the integer identity of
-   active variables for every gibbs sample run, this is used to translate the values 
-   file, the "D" file that records the actual Beta drawn values.  Tau parameters
-   get their own files as well.  A file of Rao-blackwellized posterior probability of activation
-   parameters is also saved as a file.
+  Sorting X allows a simple way for BayesSpike algorithm to identify which columns occur in the same groups,
+  and to take eigenvectors of the right set of columns.  The Fixed effects occur first in the matrix X as a matter of simplicity.
+  If FirstRandom is negative, but tauEndList is supplied, it will be assumed that there are no fixed effects.
+  If tauEndList is not supplied and FirstRandom is NAN or negative, it will be assumed there are no random grouped effects in the model
+  
+  Note that in R, the first column is "1", and the last column is "\code{NROW(X)}".
+  
+  The BayesSpikeCL has a C accessor, "CFirstRandom" and "CtauEndList", which are expressed in terms of the
+  C values.
+  
 }
 \value{
-    BayesSpikeRegression serves as a wrapper function to write and read these files.
-    Setting \code{NewWrite=0} will by default set \code{\link{BayesSpike}} to attempt to read currently written
-    files rather than start new chains.  If the files are only half written, then BayesSpike
-    will read in current chains and attempt to append until the chains are finished.
-    If chains are fully finished, \code{\link{BayesSpikeRegression}} will simply read in the files.
-    
-       Standalone \code{\link{ReturnSubCodaFromFiles}()} is used to read sub-sized
-   CodaChains from files.
+    Object analysis object is a "Rcpp module", with various properties and methods
+     \item{\code{\link{CodaList}}}{
+     Coda mcmc table list of output if generated.  OnPiA may be an element of this list if it is set through Beta Priors
+     }
 }
 \references{ Diallel Paper, pending BayesSpike submission }
 \author{ Alan Lenarcic, Will Valdar }
@@ -93,7 +74,7 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
   "TBSRoo"  is a class using R.oo which we would like to deprecate in favor of 
   an R5 class, "\code{\link{TBSR5}}"  or "\code{\link{BayesSpikeR5}}" is  the R5 storage class.
 }
-\seealso{ \code{\link{BayesSpikeRegression}}, \code{\link{BayesSpikeFromAutoDiallel}}, 
+\seealso{ \code{\link{BayesSpikeRegression}}, \code{\link{BayesSpikeFromAutoDiallel}}, \code{\link{OnBetea}}, \code{\link{OnPiA}},
   \code{\link{BayesDiallel}}, \code{\link{coda}},
   \code{\link{Rcpp}}, \code{\link{R.oo}}, \code{\link{methods::ReferenceClasses}}
   }

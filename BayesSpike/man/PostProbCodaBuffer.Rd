@@ -1,6 +1,6 @@
 \name{PostProbCodaBuffer}
 \alias{PostProbBuffer}
-\alias{postprobcodabuffer}}
+\alias{postprobcodabuffer}
 \alias{PostProbCodaBuffer}
 \alias{PostProbCoda}
 \alias{GenerateProbCodaList}
