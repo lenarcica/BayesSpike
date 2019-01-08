@@ -9,6 +9,10 @@
 \alias{bscpp}
 \alias{BSCPP}
 \alias{BayesSpikeCpp}
+\alias{BayesSpikeOB}
+\alias{BayesSpikeObject}
+\alias{MBS}
+\alias{BS}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ BayesSpikeCpp \code{\link[Rcpp]{Rcpp}} Module Class}
 \description{
@@ -16,6 +20,8 @@
  
  This is a \code{\link[Rcpp]{Rcpp}} module contianing a multitude of methods
  for running and rerunning Gibbs sampling chains using selection and group selection.
+ 
+ In example manual code, this object will be assigned to variable names "MBS", "ABS", "BSAFD", etc.
 }
 \usage{
 BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
@@ -62,9 +68,13 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
 \details{
  Analysis object is a "Rcpp modules" object or imbedded C++ class with multiple
    access vectors
+   
+  Type "BayesSpikeCL" at prompt when BayesSpike library is loaded to get a list of
+  all methods and fields attached to a bayes spike object.
 }
 \value{
     Object analysis object is a "Rcpp module", with various properties and methods
+     \item{\code{\link{TBSR5}}}{\code{BayesSpikeOB$TBSR5} is the linked R5 object containing user data}
      \item{CodaList}{Coda mcmc table list of output if generated}
      \item{Beta}{Current Beta Vector}
      \item{\link{PostProbBuffer}}{Buffer of information holding posterior probability information.}
@@ -108,6 +118,11 @@ try(require(R.oo, quietly=TRUE, warn.conflicts=FALSE), silent=TRUE);
 try(require(corpcor, quietly=TRUE, warn.conflicts=FALSE), silent=TRUE);
 require(BayesDiallel, quietly = TRUE, warn.conflicts=FALSE);
 require(R.oo, warn.conflicts=FALSE, quietly=TRUE);
+
+library(BayesSpike)
+
+## Prints all BayesSpike Class RCpp methods/fields.
+BayesSpikeCL
 
 ###############################################################################
 ## First Example Piximus Diallel Mouse Data.

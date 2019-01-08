@@ -63,6 +63,9 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
     Object analysis object is a "Rcpp module", with various properties and methods
      \item{CodaList}{Coda mcmc table list of output if generated}
      \item{Beta}{Current Beta Vector}
+     \item{\code{\link{MBS}}}{This is the RCpp \code{\link{BayesSpikeObject}} and it is attached in reverse here.
+     
+     TBSR5 is attached to the MBS object, and so both the R5 and RCpp objects are joined.}
 }
 \references{ Diallel Paper, pending BayesSpike submission }
 \author{ Alan Lenarcic, Will Valdar }

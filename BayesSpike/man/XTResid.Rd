@@ -9,6 +9,7 @@
 \alias{Coordinate Descent Objects}
 \alias{CoordinateDescentObjects}
 \alias{XTX}
+\alias{XtX}
 \alias{X^T X}
 \alias{X^TY}
 \alias{X^T Y}
@@ -16,7 +17,7 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Objects for Coordinate Descent}
 \description{
-  In bot group and fixed sampling, the key calculated quantity to do sparse Bayesian regression is 
+  In both group and fixed sampling, the key calculated quantity to do sparse Bayesian regression is 
   the vector known as "XTResid" in the Coordinate Descent literature.
   
   It is equivalent to \eqn{X^T(Y-X \beta)}{X^T * (Y - X \beta)}.  To update this residual vector
@@ -76,6 +77,8 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
 \arguments{
   \item{\code{X}}{X matrix supplied to BayesSpike}
   \item{\code{\link{Y}}}{ In contrast, this input to BayesSpike is the dependent target vector}
+  \item{\code{\link{XtX}}}{ X^{t} X in the BayesSpike Object is a list of columns with vectors of X%T X_j which are currently loaded
+  into the Bayesian Algorithm  }
 }
 \details{
  XTresid is \eqn{X^T(Y-X \beta)}{X^T(Y-X \beta)}.  

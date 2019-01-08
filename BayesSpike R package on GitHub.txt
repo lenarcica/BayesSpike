@@ -1,0 +1,22 @@
+BayesSpike R package on GitHub
+
+This is the directories and code for the BayesSpike package, written by Alan Lenarcic and William Valdar
+for investigation into sparse Bayes group confidence intervals.
+
+
+With R or RTools installed:
+"""
+R CMD BUILD BayesSpike
+"""
+should make a tar.gz of the package.
+
+"""
+R CMD INSTALL BayesSpike_XXXXX.tar.gz
+""""
+will compile the code and install the R package directory.  It will prompt for several
+required pacakges to be installed, particularly "RCpp".  At this time BayesSpike runs with RCpp 0.12.7 on R 3.3.1, but we will investigate whether
+it operates on upgraded versions.
+
+BayesSpike is a "single thread" gibbs sampler.  For multi-thread operations, BayesSpike can run mcmc chains independently or try out a differentmodel.
+BayesSpike tries to identify small parameters sets O(100) out of large sets O(100000), and is particularly focussed on groups of parameters for which
+a Bayesian Confidence measure of inclusion is desired.

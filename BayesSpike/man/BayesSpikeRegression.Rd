@@ -80,7 +80,7 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
    after running EarlyEndStep.}
   \item{\code{\link{DoLogitPreProb}}}{Do a Logit regression approximated by df 9 Robit}
   \item{\code{\link{DoLogitPostProb}}}{Do a Logit regression approximated by a Probit model and then use importance samplign after}
-  \item{DoLongCI}{
+  \item{\code{\link{DoLongCI}}}{
     To save Long Intervals, this must be true in \code{\link{BayesSpikeRegression}} call.
     The "Long" Buffer is a storage of gibbs samples that are all non-zero for all p Beta coefficients
     This can only be saved on a file (Not stored in Coda List even if DoRecord[1] == 1).  This draws a nonzero
@@ -110,14 +110,21 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
 }
 \value{
     Object analysis object is a "\code{\link[Rcpp]{Rcpp}} module" of time , with various properties and methods
-     \item{CodaList}{Coda mcmc table list of output if generated}
+     \item{\code{\link{BayesSpikeObject}}}{RCpp object returned by BayesSpikeRegression.  This will have methods and fields such as described in all
+       of the items belop}
+     \item{\code{\link{TBSR5}}}{R5 object attached to the \code{\link{BayeSSpikeObject}}, which acts as oo framework to preserve
+       information from the user and accelerate act of the save function}
+     \item{\code{\link{CodaList}}}{Coda mcmc table list of output if generated.  Can be retrieved from disk by subset.
+     See \code{\link{SubsetCoda}} to discuss how to populate CodaList only with a subset of coordinates.}
+     \item{\code{\link{SubCodaList}}}{Coda list of only a few coordinates given by setting "\code{\link{SubSetCoords}}"}
+     \item{\code{\link{TauCodaList}}}{Coda list likewise for tau parameters.  Info on retrieval of chains on link}
      \item{\code{\link{OnBeta}}}{Current Beta Vector}
    \item{\link{PostProbBuffer}}{Buffer of information holding posterior probability information.}
      \item{\link{PostProbCodaList}}{Final Coda List of information holding posterior probability information.}
      \item{\code{\link{OnTau}}}{Current Draw of Tau random effects}
-     \item{XtX}{Current Weighted part matrix of correlations}
+     \item{\code{\link{XtX}}}{Current Weighted part matrix of correlations}
      \item{XtY}{Current Weighted part vector of correlations}
-     \item{XtResid}{Current XtResid vector or 
+     \item{\code{\link{XtResid}}}{Current XtResid vector or 
        \eqn{ \mathbf{X}^{T}( \vec{Y} - \mathbf{X} \boldsymbol{\beta}) }{ t(X) (Y-X*Beta)}
       useful in deciding posterior probabilities.  }
   \item{\code{\link{InitiateTime}}}{Time when BayesSpikeCL class was initiated}
@@ -127,7 +134,8 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
   \item{\code{RunAlgorithm()}}{The Method that running a BayesSpike triggers.}
   
   Note that \code{BayesSpikeCL} in the file \code{BayesSpikeCpp.cpp} will contain a
-  list of the many public functions available to the output class of this paper.
+  list of the many public functions available to the output class of this paper.  Typing "BayesSpikeCL" at the R prompt will generate
+  a large lis to fall BayesSpike Class objects.
 }
 \references{ Diallel Paper, pending BayesSpike submission }
 \author{ Alan Lenarcic, Will Valdar }
@@ -138,7 +146,7 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
 }
 \seealso{ 
   \code{\link{BayesSpikeRegression}}, 
-  \code{\link{RobitRegression}},
+  \code{\link{RobitRegression}}, \code{\link{BayesSpikeCL}}, \code{\link{TBSR5}},
   \code{\link{MT}},
   \code{\link{OnPiA}},
   \code{\link{OnSigma}},
@@ -157,6 +165,10 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
 \examples{
 ## Load in R packages
 library(BayesSpike);
+
+## List all functions accessible to BayesSpike Class:
+BayesSpikeCL
+
 try(require(lattice, quietly=TRUE, warn.conflicts=FALSE), silent=TRUE);
 try(require(coda, quietly=TRUE, warn.conflicts=FALSE), silent=TRUE);
 try(require(R.methodsS3, quietly=TRUE, warn.conflicts=FALSE), silent=TRUE);
@@ -274,6 +286,11 @@ ABS = BayesSpikeRegression(Y=YY,X=X, BetaStart = BetaStart,
     TBSR5 = ABS$TBSR5, StartIter = 0, EndIter = 500,
     Verbose = 0, SubSetCoords = NULL, DoLogitPostProb = FALSE,
     DrawBeta = TRUE) 
+    
+# Set a trival number of coordinates to get a Coda List only containing 
+#   those coordinates
+ABS$SubSetCoords <- c(1,2,5,10)
+summary(ABS$SubCodaList)
     
 ###############################################################################
 ## First Example Piximus Diallel Mouse Data.

@@ -16,6 +16,7 @@
 \alias{.SigmaCodaList}
 \alias{WeightCodaList}
 \alias{ProbCodaList}
+\alias{SubSetCoords}
 \alias{PostProbCodaList}
 \alias{PosteriorProbabilityCodaList}
 \alias{PosteriorCodaList}
@@ -24,6 +25,8 @@
 \alias{longlist}
 \alias{LongList}
 \alias{YCodaList}
+\alias{SubSetCoords}
+\alias{subsetcoords}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Subset, disk-loaded Coda MCMC chains.}
 \description{
@@ -45,6 +48,10 @@
    
    ProbCodaList: refers to Beta activation posterior draw probabilities.
    
+   
+   By attaching "SubSetCoords" to a BayesSpikeObject, one can get a "SubCodaList"
+   to be retrieved and returned featuring only the coordinates requested.  There is also a \code{SubSetTau}
+   that can be set to get a subset of parameters introduced to \code{TauCodaList}.
 }
 \usage{
 BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
@@ -71,6 +78,11 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
   PriorProbFixed=NULL, PriorProbTau = NULL, dfRobit = -1, TemperatureList = NULL,
   burnin = NULL, EEMergeEvery = NULL, DoEEProbSort = 0, 
   EEProbSortWidth = -1, PrintIter = 200, ...)
+  
+  # BayesSpikeOB$SubSetCoords <- c(1,3,4,...);
+  # BayesSpikeOB$SubSetTau <- c(1,4,5,3,...);
+  #summary(BayesSpikeOB$SubCodaList)
+  #summary(BayesSpikeOB$TauCodaList)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -115,6 +127,9 @@ BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,
    Accessing these members causes the object to load these in from harddrive.
    
    These are important in calculating \code{\link{AutomaticQuantiles}}.
+   
+   These are accessible as a method from the \code{\link{BayesSpikeObject}}.  So "BayesSpikeObject$SubCodaList" will activate the retrieval
+   function and attach the SubCodaList as a member coda-matrix to the the BaysSpike Object.
 }
 \value{
 

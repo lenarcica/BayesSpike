@@ -6,12 +6,18 @@
 \alias{GiveCounts}
 \alias{GiveCountFrequency}
 \alias{GiveCodaSubset}
+\alias{SubsetCoda}
+\alias{SubSetCoords}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Load in Coda from compressed files}
 \description{
    
+  ReturnSubCodaFromFiles <-
    Standalone \code{\link{ReturnSubCodaFromFiles}()} is used to read sub-sized
    CodaChains from files if \code{\link{SaveDir}} was set.
+   
+  Furthermore, one can attach \code{\link{SubCodaList}} to a BayesSpike Object,
+  if one sets \code{\link{SubSetCoords}}
 }
 \usage{
  ReturnSubCodaFromFiles <- function(
