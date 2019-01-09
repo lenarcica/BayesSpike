@@ -1,9 +1,18 @@
 \name{BayesSpike}
 \alias{BayesSpike}
+\alias{GroupBayes}
+\alias{groupbays}
+\alias{groupbayes}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{ BayesSpike package }
+\title{ BayesSpike package, implementing "GroupBayes" approach to Bayesian Gibbs Sampling }
 \description{
-  The BayesSpike package for analyzing selection regression datasets via exclusionary spike sampling
+  The BayesSpike package for analyzing selection regression datasets via exclusionary spike sampling.
+  
+  While "BayesSpike" is a more engaging name for an R package, its shorthand initials left something to be desired, and "GroupBayes=GB"
+  was used in the methods paper.   
+  
+  This is the "GroupBayes" gibbs sampler as used in papers 2013-2014 by Lenarcic and Valdar on Genetics Diallel research.
+    Methods paper to be posted on Arxiv.
 }
 \usage{
 BayesSpikeRegression <- function(X=NULL,Y=NULL, BetaStart = NULL,

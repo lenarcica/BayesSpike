@@ -1,8 +1,8 @@
 Package: BayesSpike
 Type: Package
-Title: Bayesian Spike and Slab Hierarchical Models
-Version: 0.5321
-Date: 2013-10-30 (update 2016-10-28)
+Title: Bayesian Sparse Selection Gibbs Sampling Models using a collapsed sampling and a switching sampler to achieve  "GroupBayes" for grouped covariates
+Version: 0.54
+Date: 2013-10-30 (update 2019-01-09)
 Author: Alan Lenarcic
 Maintainer: <lenarcic@post.harvard.edu>
 Description: Universal Hierchical Model for group effects, compiled for R 3.3.1

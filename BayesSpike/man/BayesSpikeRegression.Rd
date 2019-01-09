@@ -1,10 +1,19 @@
 \name{BayesSpikeRegression}
 \alias{BayesSpikeRegression}
+\alias{bayesspikeregression}
+\alias{GroupBayesRegression}
+\alias{groupbayesregression}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{ BayesSpikeRegression algorithm }
+\title{ BayesSpikeRegression Main function}
 \description{
   The BayesSpike package for analyzing selection regression datasets via exclusionary spike sampling,
   BayesSpikeRegression is chief wrapper function.
+  
+  This package implements the "GroupBayes" estimator used in papers of Alan Lenarcic and William Valdar on
+    the diallel published in 2013-2014.  While "BayesSpike" is a more engaging R package name and
+    the original shorthand for the method as supplied to users of BayesDiallel, the shorthand initials
+    leave something to be desired, so the methods paper will call this a "GroupBayes" approach and 
+    BayesSpike can be considered a single coded implementation used in the demonstration of that approach. 
   
   Warning, for successful use of \code{\link{BayesSpikeRegression}} the
   directory input \code{\link{SaveDir}} must be set to a user-accessible hard-drive

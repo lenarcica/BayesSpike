@@ -2,6 +2,13 @@
 /*                                                                            */
 /*   BayesSpikeCpp.cpp                                                        */
 /*   (c) 2011-2019 Alan Lenarcic                                              */
+/*    Coded for papers on Diallel at lab of William Valdar, UNC.              */
+/*    An implementation of "GroupBayes" estimator as described in methods     */
+/*    paper from Lenarcic and Valdar coming to Arxiv.                         */
+/*   This is code that has been used in papers related to package             */
+/*    BayesDiallel and papers in Genetics: 2013-2014                          */
+/*    and supplied to users of BayesDiallel.                                  */
+/*                                                                            */
 /*                                                                            */
 /*   Description                                                              */
 /*                                                                            */
@@ -5992,6 +5999,7 @@ RCPP_MODULE(modBayesSpikeCL) {
      "DependenciesTau:  Fixed Dependencies on nearby QTL") 
   .method("BPriorLOfX", &BayesSpikeCL::BPriorLOfX, "B Prior of Value")
   .property("TauCodaList", &BayesSpikeCL::get_TauCodaList, &BayesSpikeCL::set_TauCodaList, "TauCodaList - Coda MCMC list of Tau draws - set SubSetTau to choose vectors to keep")
+  .property("SubTauList", &BayesSpikeCL::get_TauCodaList, &BayesSpikeCL::set_TauCodaList, "TauCodaList - Coda MCMC list of Tau draws - set SubSetTau to choose vectors to keep.  Note this is same as TauCodaList.")
   .property("tauCodaList", &BayesSpikeCL::get_TauCodaList,&BayesSpikeCL::set_TauCodaList, "TauCodaList -- alias ")
   .property("CodaTauList", &BayesSpikeCL::get_TauCodaList,&BayesSpikeCL::set_TauCodaList, "TauCodaList -- alias")  
   .property("SetupYSq", &BayesSpikeCL::SetupYSq, "Refreshes YSq")

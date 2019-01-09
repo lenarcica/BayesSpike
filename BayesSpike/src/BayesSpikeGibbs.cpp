@@ -745,7 +745,8 @@ int BayesSpikeCL::SamplePartBeta(int StF, int MaxDo) {
 //     "cXtY" partial XtResid = t(X) %*% (Y-X %*% Beta)
 //   This maximization uses CopyIn2 to copy material inside.
 //
-//
+//   This works by sampling some blocks Beta by the conditional posterior given other Beta
+//   We continue until all Beta have received at least an update.
 int BayesSpikeCL::SamplePartBeta2(int StF, int MaxDo) {
   if (JustDidPartBeta < 0) {
     JustDidPartBeta = 1;
@@ -1027,7 +1028,14 @@ int BayesSpikeCL::SamplePartBeta2(int StF, int MaxDo) {
 }
 
 
-
+////////////////////////////////////////////////////////////////////////////////
+// ProbOldCoda, ICoda
+//  
+//   The posterior probability of draws at higher temperatures
+//  allows us to determine Merge samples.  By sorting by increasing energy
+//  we are able to identify all samples from the previous temperature within
+//  the same energy slice as our target draw.  
+//
 int BayesSpikeCL::LoadProbOldCodaICoda(int DoEEProbSort, int StartIter, int LastIter) {
   FILE *fPOldCoda = NULL;
   FILE *fOldILocCoda = NULL;
@@ -1227,6 +1235,11 @@ int BayesSpikeCL::LoadProbOldCodaICoda(int DoEEProbSort, int StartIter, int Last
   return(1);
 
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// WriteProstProbBuffer()
+//                
+//   Write Gibbs Samples from PostProbBuffer to disk.
 int BayesSpikeCL::WritePostProbBuffer() {
   if (NoSave != 0) { return(-1); }
   FILE *PostProbFile = NULL;
@@ -1419,6 +1432,17 @@ int BayesSpikeCL::TestFindInMe(SEXP FindProb) {
    if (ProbOldCoda == NULL) { Rprintf("TestFindInMe: No, ProbOldCoda is NULL. \n"); return(-1); }
    return(FindInMe(LengthOldCoda, ProbOldCoda, dFindProb));
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// EESamplerMerge()
+//
+//    As described in Section 2.3 and used in the Simulations, this
+//  merge step pulls draws from a previous higher temperature within an energy
+//  window of our current draw at local temperature.  This allows the sampler
+//  to quickly draw into a new sampler territory.
+//
+//  We use "FindInMe" to find closest sample within the sorted ProbOldCoda.
+//   We then sample amongth similar Posterior values in there.
 int BayesSpikeCL::EESamplerMerge() {
   if (ProbOldCoda == NULL) { return(-1); }
   if (Verbose > 2) {

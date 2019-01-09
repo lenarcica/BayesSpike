@@ -1,6 +1,12 @@
 ## BayesSpikeRegression.r
 ##
 ##  Alan Lenarcic, 2011-2019
+##    used in paper and reserach by Alan Lenarcic and William Valdar
+##    including Diallel projects, and separate methods paper coming available on Arxiv
+##
+##  Home of main R prompt accessible "BayesSpikeRegression()" function.
+##   AKA "GroupBayes" as defined as an estimator approach in methods
+##   paper from Alan Lenarcic and William Valdar.
 ##
 ##   The "BayesSpikeRegression()" main R function takes a large list of
 ##  default and optional parameters setting many possible T/Logit/Robit++ prior

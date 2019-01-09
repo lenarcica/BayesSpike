@@ -459,7 +459,7 @@ private :
   //
   //  This is the key selection vector for regression in BayesSpike
   double *XtResid;
-  int MaxInvert;
+  int MaxInvert;   // Max size square matrix to invert as whole
 
   
   // Indicates which vectors if XtX are properly weighted (for non-Gauss)
@@ -504,6 +504,7 @@ private :
 
   int DoTheKills(int *RankMyUseless, int FindPivot, int LeftRight);
   
+  // Temperture Related vector and location.
   double *TemperatureList;  int LengthTemperatureList; int Tempii;
   double TemperatureDecreasingRate;
   double Temperature, invTemperature;
@@ -517,6 +518,7 @@ private :
   
   int *OrderAttack;
 
+  // Coda Chain Related information
   int *Codajj; int *CodaTjj; bufferILocType *CodaTLocjj;   int OnCodaTLocjj;
   int LengthCodaTjj;
   int LengthCodaTLoc;  int TotCodaTLocjj;
@@ -545,12 +547,17 @@ private :
   AObject *Rstaubarnu, *Rstaupriordf, *RsPriorXScaling, *RsPriorOftau;    
   TauOfFContainer *MT; 
   
+  // Sums of YSq and YResidSq used to identify Sigma draws.
   double YResidSq;  double YSq;  
   SEXP DependenciesList;
   AObject *InitiateTime, *SecondInitiateTime, *CompleteTime;
   
   int MaxTauList;  double *SmallXtResid, *SmallRVec;
   
+  // AllEigenValues.
+  // 
+  // These eigenvalues should be calculated for each group to go into
+  // Object MY whenever desired.
   SEXP AllEigenValues;  SEXP AllEigenVectors;
   AObject *RAllEigenValues, *RAllEigenVectors;
   AObject*RDependenciesFixed; AObject*RDependenciesTau;
@@ -596,6 +603,7 @@ private :
   SEXP sCodadTFile, sCodaiTFile;
   
  
+  // R Sexpressions and Poitners to Current IFile, JFile to save fuffer
   SEXP  sCodaPFile;
   SEXP sSaveDir;  AObject *RsSaveDir;
   RRObject *RsCodaIFile, *RsCodaJFile;
@@ -7605,6 +7613,7 @@ SEXP get_TauCodaList() {
     }
     iFirstRandom = iFirstRandom_;  return;
   }
+  // This is the first coordinate used to find random variables as expressed in C (start from 0)
   int get_CFirstRandom() {
     if (sOnTau == NULL  && Verbose >= 3) {
       Rprintf("get_CFirstRandom: No First Random because it is sOnTau is NULL. \n"); R_FlushConsole();
@@ -7636,6 +7645,8 @@ SEXP get_TauCodaList() {
   int get_OnKappaS() { return(OnKappaS);}
   int get_OnKappaMem() { return(OnKappaMem);}
   
+  // MaxInvert: the maximum size X^T X matrix where we invert in parts
+  //  instead of as a single whole matrix.  SamplePartBeta2() will be called.
   SEXP get_MaxInvert() {
     SEXP sOut = R_NilValue; Rf_protect(sOut = Rf_allocVector(INTSXP,1));
     INTEGER(sOut)[0] = MaxInvert; Rf_unprotect(1); return(sOut);
