@@ -7,13 +7,13 @@ BayesSpike R package on GitHub
 This is the directories and code for the BayesSpike package, written by Alan Lenarcic and William Valdar
 for investigation into sparse Bayes group confidence intervals.
 
-"Algorithmic Bayesian Group Gibbs Selection" by Alan Lenarcic and William Valdar should arrive on Arxiv shortly.
+"Algorithmic Bayesian Group Gibbs Selection" by Alan Lenarcic and William Valdar, located on arXiv on https://arxiv.org/abs/1901.02945.
 
 This is the algorithm and code used in BayesDiallel package and papers:
 Lenarcic, Svenson, Churchill, and Valdar.  A general Bayesian approach to analyzing diallel crosses of inbred strains. 
   Published in Genetics, (no. 132563).
 
-Crowley, Kim, Lenarcic, …, Sullivan, and Valdar.  Genetics in the Diallel: Heritable Architecture of Adverse Reactions to Haloperidol in Mouse. 
+Crowley, Kim, Lenarcic, â€¦, Sullivan, and Valdar.  Genetics in the Diallel: Heritable Architecture of Adverse Reactions to Haloperidol in Mouse. 
   Published in Genetics, (no. 156901) for 2014, co-first author as statistical theorist.
 
 
